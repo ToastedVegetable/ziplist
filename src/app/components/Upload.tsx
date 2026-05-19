@@ -355,7 +355,7 @@ export function Upload() {
                     onChange={(e) =>
                       updateIngredient(idx, { category: e.target.value as Ingredient["category"] })
                     }
-                    className="col-span-6 sm:col-span-3 bg-white border border-slate-200 rounded-lg px-2 py-2 text-sm capitalize focus:outline-none focus:ring-2 focus:ring-[#4E2A84]/20 focus:border-[#4E2A84]"
+                    className="col-span-6 sm:col-span-2 bg-white border border-slate-200 rounded-lg px-2 py-2 text-sm capitalize focus:outline-none focus:ring-2 focus:ring-[#4E2A84]/20 focus:border-[#4E2A84]"
                   >
                     {INGREDIENT_CATEGORIES.map((c) => (
                       <option key={c} value={c}>
@@ -363,7 +363,7 @@ export function Upload() {
                       </option>
                     ))}
                   </select>
-                  <div className="col-span-10 sm:col-span-1 relative">
+                  <div className="col-span-10 sm:col-span-2 relative">
                     <span className="absolute left-2 top-1/2 -translate-y-1/2 text-slate-400 text-sm">$</span>
                     <input
                       type="number"
@@ -372,7 +372,7 @@ export function Upload() {
                       value={ing.cost}
                       onChange={(e) => updateIngredient(idx, { cost: e.target.value })}
                       placeholder="0.00"
-                      className="w-full bg-white border border-slate-200 rounded-lg pl-5 pr-2 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#4E2A84]/20 focus:border-[#4E2A84]"
+                      className="w-full min-w-0 bg-white border border-slate-200 rounded-lg pl-5 pr-2 py-2 text-sm tabular-nums focus:outline-none focus:ring-2 focus:ring-[#4E2A84]/20 focus:border-[#4E2A84]"
                     />
                   </div>
                   <button

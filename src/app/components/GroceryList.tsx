@@ -10,9 +10,22 @@ type GroceryItem = {
   totalCost: number;
 };
 
+const SAVED_LISTS_KEY = "ziplist.savedGroceryLists";
+
+const categoryNames: Record<string, string> = {
+  produce: "Produce",
+  protein: "Meat & Protein",
+  grains: "Grains & Pasta",
+  dairy: "Dairy & Eggs",
+  pantry: "Pantry Staples",
+  spices: "Spices",
+  other: "Other",
+};
+
 export function GroceryList() {
   const { allRecipes, selectedMeals } = useAppContext();
   const [checkedItems, setCheckedItems] = useState<Set<string>>(new Set());
+  const [statusMessage, setStatusMessage] = useState<string | null>(null);
 
   const mealsToShop = allRecipes.filter(r => selectedMeals.has(r.id));
 
@@ -48,11 +61,86 @@ export function GroceryList() {
     return { itemsByCategory: grouped, grandTotal: total };
   }, [mealsToShop]);
 
+  const groceryListText = useMemo(() => {
+    const lines = [
+      "ziplist grocery list",
+      "",
+      `Meals: ${mealsToShop.map(meal => meal.name).join(", ")}`,
+      "",
+    ];
+
+    Object.entries(itemsByCategory).forEach(([cat, items]) => {
+      lines.push(categoryNames[cat] || cat);
+      items.forEach(item => {
+        lines.push(
+          `- ${item.name}: ${item.quantityStr.join(" + ")} ($${item.totalCost.toFixed(2)})`
+        );
+      });
+      lines.push("");
+    });
+
+    lines.push(`Estimated total: $${grandTotal.toFixed(2)}`);
+    return lines.join("\n");
+  }, [grandTotal, itemsByCategory, mealsToShop]);
+
+  const showStatus = (message: string) => {
+    setStatusMessage(message);
+    window.setTimeout(() => setStatusMessage(null), 3000);
+  };
+
   const toggleCheck = (name: string) => {
     const next = new Set(checkedItems);
     if (next.has(name)) next.delete(name);
     else next.add(name);
     setCheckedItems(next);
+  };
+
+  const handlePrint = () => {
+    window.print();
+  };
+
+  const handleShare = async () => {
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: "ziplist grocery list",
+          text: groceryListText,
+        });
+        showStatus("Grocery list shared.");
+        return;
+      }
+
+      await navigator.clipboard.writeText(groceryListText);
+      showStatus("Grocery list copied to clipboard.");
+    } catch (error) {
+      if (error instanceof DOMException && error.name === "AbortError") {
+        return;
+      }
+
+      showStatus("Could not share this list.");
+    }
+  };
+
+  const handleSaveList = () => {
+    const savedList = {
+      id: Date.now().toString(),
+      savedAt: new Date().toISOString(),
+      mealIds: mealsToShop.map(meal => meal.id),
+      mealNames: mealsToShop.map(meal => meal.name),
+      itemsByCategory,
+      grandTotal,
+      checkedItems: Array.from(checkedItems),
+      text: groceryListText,
+    };
+
+    try {
+      const previousLists = JSON.parse(localStorage.getItem(SAVED_LISTS_KEY) || "[]");
+      const savedLists = Array.isArray(previousLists) ? previousLists : [];
+      localStorage.setItem(SAVED_LISTS_KEY, JSON.stringify([savedList, ...savedLists]));
+      showStatus("Grocery list saved.");
+    } catch {
+      showStatus("Could not save this list.");
+    }
   };
 
   if (mealsToShop.length === 0) {
@@ -65,16 +153,6 @@ export function GroceryList() {
     );
   }
 
-  const categoryNames: Record<string, string> = {
-    produce: "Produce",
-    protein: "Meat & Protein",
-    grains: "Grains & Pasta",
-    dairy: "Dairy & Eggs",
-    pantry: "Pantry Staples",
-    frozen: "Frozen",
-    snacks: "Snacks"
-  };
-
   return (
     <div className="max-w-3xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20">
       <div className="flex items-center justify-between mb-8">
@@ -85,15 +163,33 @@ export function GroceryList() {
           <h1 className="text-3xl font-bold text-slate-800">Your grocery list for the week</h1>
           <p className="text-slate-500 mt-1">Based on your {mealsToShop.length} selected meals.</p>
         </div>
-        <div className="flex gap-3">
-          <button className="p-3 bg-white text-slate-600 rounded-full border border-slate-200 hover:bg-slate-50 shadow-sm transition-colors">
+        <div className="flex gap-3 print:hidden">
+          <button
+            type="button"
+            onClick={handlePrint}
+            className="p-3 bg-white text-slate-600 rounded-full border border-slate-200 hover:bg-slate-50 shadow-sm transition-colors"
+            aria-label="Print grocery list"
+            title="Print grocery list"
+          >
             <Printer size={18} />
           </button>
-          <button className="p-3 bg-white text-slate-600 rounded-full border border-slate-200 hover:bg-slate-50 shadow-sm transition-colors">
+          <button
+            type="button"
+            onClick={handleShare}
+            className="p-3 bg-white text-slate-600 rounded-full border border-slate-200 hover:bg-slate-50 shadow-sm transition-colors"
+            aria-label="Share grocery list"
+            title="Share grocery list"
+          >
             <Share size={18} />
           </button>
         </div>
       </div>
+
+      {statusMessage && (
+        <div className="mb-4 rounded-xl border border-purple-100 bg-purple-50 px-4 py-3 text-sm font-medium text-[#4E2A84] print:hidden">
+          {statusMessage}
+        </div>
+      )}
 
       <div className="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
         {Object.entries(itemsByCategory).map(([cat, items]) => (
@@ -146,11 +242,15 @@ export function GroceryList() {
         </div>
       </div>
 
-      <div className="mt-8 flex justify-center gap-4">
+      <div className="mt-8 flex justify-center gap-4 print:hidden">
         <Link to="/plan" className="bg-white text-slate-600 border border-slate-200 px-6 py-3 rounded-xl font-bold hover:bg-slate-50 transition-colors">
           Swap Meal
         </Link>
-        <button className="bg-[#4E2A84] text-white px-8 py-3 rounded-xl font-bold shadow-md hover:bg-[#3d2168] transition-colors">
+        <button
+          type="button"
+          onClick={handleSaveList}
+          className="bg-[#4E2A84] text-white px-8 py-3 rounded-xl font-bold shadow-md hover:bg-[#3d2168] transition-colors"
+        >
           Save List
         </button>
       </div>

@@ -199,11 +199,11 @@ export function WheelPage() {
     ctx.lineWidth = 4;
     ctx.stroke();
 
-    // Pointer (fixed at top)
+    // Pointer (fixed at bottom)
     ctx.beginPath();
-    ctx.moveTo(centerX, 20);
-    ctx.lineTo(centerX - 15, 50);
-    ctx.lineTo(centerX + 15, 50);
+    ctx.moveTo(centerX, canvas.height - 20);
+    ctx.lineTo(centerX - 15, canvas.height - 50);
+    ctx.lineTo(centerX + 15, canvas.height - 50);
     ctx.closePath();
     ctx.fillStyle = '#EF4444';
     ctx.fill();
@@ -238,8 +238,8 @@ export function WheelPage() {
         // Calculate which recipe was selected
         const normalizedRotation = currentRotation % 360;
         const sliceAngle = 360 / wheelRecipes.length;
-        // The pointer is at the top (0 degrees), calculate which slice it points to
-        const pointerAngle = (360 - normalizedRotation + 90) % 360;
+        // The pointer is fixed at the bottom (90 degrees in canvas coordinates).
+        const pointerAngle = (90 - normalizedRotation + 360) % 360;
         const selectedIndex = Math.floor(pointerAngle / sliceAngle) % wheelRecipes.length;
         const selected = wheelRecipes[selectedIndex];
 
