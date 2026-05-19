@@ -1,6 +1,36 @@
 import { Recipe, CreateRecipeInput, UpdateRecipeInput, RecipeFilter } from "../types/Recipe";
 
 const STORAGE_KEY = "ziplist.userRecipes";
+const env = (import.meta as any).env || {};
+const SUPABASE_URL = env.VITE_SUPABASE_URL?.replace(/\/$/, "");
+const SUPABASE_KEY = env.VITE_SUPABASE_PUBLISHABLE_KEY || env.VITE_SUPABASE_ANON_KEY;
+
+type RecipeRow = {
+  id: string;
+  name: string;
+  description?: string | null;
+  image: string;
+  cost: string;
+  prep_time: string;
+  cook_time?: string | null;
+  total_time?: string | null;
+  tags: string[];
+  difficulty: string;
+  category: string;
+  cuisine?: string | null;
+  servings?: number | null;
+  calories?: number | null;
+  ingredients: any[];
+  steps: string[];
+  created_at: string;
+  updated_at: string;
+  created_by?: string | null;
+  source?: string | null;
+  is_public?: boolean | null;
+  rating?: number | null;
+  times_cooked?: number | null;
+  last_cooked_at?: string | null;
+};
 
 function storageAvailable(): boolean {
   try {
@@ -23,6 +53,84 @@ function parseStoredRecipes(jsonData: string): Recipe[] {
     updatedAt: new Date(r.updatedAt),
     lastCookedAt: r.lastCookedAt ? new Date(r.lastCookedAt) : undefined,
   }));
+}
+
+function isSupabaseEnabled(): boolean {
+  return Boolean(SUPABASE_URL && SUPABASE_KEY);
+}
+
+function supabaseHeaders(extraHeaders: Record<string, string> = {}): Record<string, string> {
+  const key = SUPABASE_KEY || "";
+
+  return {
+    apikey: key,
+    Authorization: `Bearer ${key}`,
+    "Content-Type": "application/json",
+    ...extraHeaders,
+  };
+}
+
+function isRecipeDifficulty(value: string): value is Recipe["difficulty"] {
+  return value === "Easy" || value === "Medium" || value === "Hard";
+}
+
+function isRecipeCategory(value: string): value is Recipe["category"] {
+  return value === "breakfast" || value === "lunch" || value === "dinner" || value === "snack" || value === "dessert";
+}
+
+function rowToRecipe(row: RecipeRow): Recipe {
+  return {
+    id: row.id,
+    name: row.name,
+    description: row.description || undefined,
+    image: row.image,
+    cost: row.cost,
+    prepTime: row.prep_time,
+    cookTime: row.cook_time || undefined,
+    totalTime: row.total_time || undefined,
+    tags: row.tags || [],
+    difficulty: isRecipeDifficulty(row.difficulty) ? row.difficulty : "Medium",
+    category: isRecipeCategory(row.category) ? row.category : "dinner",
+    cuisine: row.cuisine || undefined,
+    servings: row.servings || undefined,
+    calories: row.calories || undefined,
+    ingredients: row.ingredients || [],
+    steps: row.steps || [],
+    createdAt: new Date(row.created_at),
+    updatedAt: new Date(row.updated_at),
+    createdBy: row.created_by || undefined,
+    source: row.source === "system" || row.source === "imported" ? row.source : "user-upload",
+    isPublic: row.is_public ?? true,
+    rating: row.rating || undefined,
+    timesCooked: row.times_cooked || 0,
+    lastCookedAt: row.last_cooked_at ? new Date(row.last_cooked_at) : undefined,
+  };
+}
+
+function recipeToRow(input: CreateRecipeInput | Recipe): Omit<RecipeRow, "id" | "created_at" | "updated_at"> {
+  return {
+    name: input.name,
+    description: input.description || null,
+    image: input.image,
+    cost: input.cost,
+    prep_time: input.prepTime,
+    cook_time: input.cookTime || null,
+    total_time: input.totalTime || null,
+    tags: input.tags,
+    difficulty: input.difficulty,
+    category: input.category,
+    cuisine: input.cuisine || null,
+    servings: input.servings || null,
+    calories: input.calories || null,
+    ingredients: input.ingredients,
+    steps: input.steps,
+    created_by: input.createdBy || null,
+    source: input.source || "user-upload",
+    is_public: input.isPublic ?? true,
+    rating: input.rating || null,
+    times_cooked: input.timesCooked || 0,
+    last_cooked_at: input.lastCookedAt ? input.lastCookedAt.toISOString() : null,
+  };
 }
 
 /**
@@ -85,10 +193,63 @@ export class RecipeDatabase {
     }
   }
 
+  private mergeRemoteRecipes(remoteRecipes: Recipe[]): Recipe[] {
+    const recipesById = new Map<string, Recipe>();
+
+    remoteRecipes.forEach(recipe => recipesById.set(recipe.id, recipe));
+    this.recipes.forEach(recipe => {
+      if (!recipesById.has(recipe.id)) {
+        recipesById.set(recipe.id, recipe);
+      }
+    });
+
+    this.recipes = [...recipesById.values()];
+    return [...this.recipes];
+  }
+
+  private async fetchRemoteRecipes(): Promise<Recipe[]> {
+    if (!isSupabaseEnabled()) {
+      return [];
+    }
+
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/recipes?select=*&order=created_at.desc`, {
+      headers: supabaseHeaders(),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Could not fetch recipes: ${response.status}`);
+    }
+
+    const rows = await response.json() as RecipeRow[];
+    return rows.map(rowToRecipe);
+  }
+
+  private async createRemoteRecipe(input: CreateRecipeInput): Promise<Recipe> {
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/recipes`, {
+      method: "POST",
+      headers: supabaseHeaders({ Prefer: "return=representation" }),
+      body: JSON.stringify(recipeToRow(input)),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Could not save recipe: ${response.status}`);
+    }
+
+    const rows = await response.json() as RecipeRow[];
+    return rowToRecipe(rows[0]);
+  }
+
   /**
    * CREATE - Add a new recipe
    */
   async create(input: CreateRecipeInput): Promise<Recipe> {
+    if (isSupabaseEnabled()) {
+      const remoteRecipe = await this.createRemoteRecipe(input);
+      this.recipes.unshift(remoteRecipe);
+      this.persistUserRecipes();
+      return remoteRecipe;
+    }
+
     const now = new Date();
     const recipe: Recipe = {
       ...input,
@@ -111,13 +272,23 @@ export class RecipeDatabase {
    * READ - Get a single recipe by ID
    */
   async getById(id: string): Promise<Recipe | null> {
-    return this.recipes.find(r => r.id === id) || null;
+    const recipes = await this.getAll();
+    return recipes.find(r => r.id === id) || null;
   }
 
   /**
    * READ - Get all recipes
    */
   async getAll(): Promise<Recipe[]> {
+    if (isSupabaseEnabled()) {
+      try {
+        const remoteRecipes = await this.fetchRemoteRecipes();
+        return this.mergeRemoteRecipes(remoteRecipes);
+      } catch (error) {
+        console.warn("Could not fetch shared recipes", error);
+      }
+    }
+
     return [...this.recipes];
   }
 
@@ -125,7 +296,7 @@ export class RecipeDatabase {
    * READ - Get recipes with filtering
    */
   async find(filter: RecipeFilter): Promise<Recipe[]> {
-    let results = [...this.recipes];
+    let results = await this.getAll();
 
     if (filter.tags && filter.tags.length > 0) {
       results = results.filter(r =>
@@ -211,7 +382,8 @@ export class RecipeDatabase {
    * UTILITY - Get random recipes
    */
   async getRandom(count: number): Promise<Recipe[]> {
-    const shuffled = [...this.recipes].sort(() => 0.5 - Math.random());
+    const recipes = await this.getAll();
+    const shuffled = [...recipes].sort(() => 0.5 - Math.random());
     return shuffled.slice(0, Math.min(count, shuffled.length));
   }
 
@@ -237,7 +409,8 @@ export class RecipeDatabase {
    * UTILITY - Get most popular recipes
    */
   async getMostPopular(count: number): Promise<Recipe[]> {
-    const sorted = [...this.recipes].sort((a, b) =>
+    const recipes = await this.getAll();
+    const sorted = [...recipes].sort((a, b) =>
       (b.timesCooked || 0) - (a.timesCooked || 0)
     );
     return sorted.slice(0, count);
@@ -247,7 +420,8 @@ export class RecipeDatabase {
    * UTILITY - Get recently added recipes
    */
   async getRecent(count: number): Promise<Recipe[]> {
-    const sorted = [...this.recipes].sort((a, b) =>
+    const recipes = await this.getAll();
+    const sorted = [...recipes].sort((a, b) =>
       b.createdAt.getTime() - a.createdAt.getTime()
     );
     return sorted.slice(0, count);
@@ -257,7 +431,8 @@ export class RecipeDatabase {
    * UTILITY - Get total count
    */
   async count(): Promise<number> {
-    return this.recipes.length;
+    const recipes = await this.getAll();
+    return recipes.length;
   }
 
   /**
