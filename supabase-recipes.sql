@@ -34,10 +34,12 @@ drop policy if exists "Anyone can read public recipes" on public.recipes;
 create policy "Anyone can read public recipes"
 on public.recipes
 for select
+to anon, authenticated
 using (is_public = true);
 
 drop policy if exists "Anyone can add recipes" on public.recipes;
 create policy "Anyone can add recipes"
 on public.recipes
 for insert
-with check (is_public = true);
+to anon, authenticated
+with check (true);
