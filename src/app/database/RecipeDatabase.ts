@@ -217,7 +217,8 @@ export class RecipeDatabase {
     });
 
     if (!response.ok) {
-      throw new Error(`Could not fetch recipes: ${response.status}`);
+      const message = await response.text();
+      throw new Error(`Could not fetch recipes: ${response.status} ${message}`);
     }
 
     const rows = await response.json() as RecipeRow[];
@@ -232,7 +233,8 @@ export class RecipeDatabase {
     });
 
     if (!response.ok) {
-      throw new Error(`Could not save recipe: ${response.status}`);
+      const message = await response.text();
+      throw new Error(`Could not save recipe: ${response.status} ${message}`);
     }
 
     const rows = await response.json() as RecipeRow[];

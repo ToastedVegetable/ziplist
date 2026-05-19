@@ -27,6 +27,9 @@ create table if not exists public.recipes (
 
 alter table public.recipes enable row level security;
 
+grant usage on schema public to anon, authenticated;
+grant select, insert on public.recipes to anon, authenticated;
+
 drop policy if exists "Anyone can read public recipes" on public.recipes;
 create policy "Anyone can read public recipes"
 on public.recipes
