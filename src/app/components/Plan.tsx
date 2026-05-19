@@ -164,6 +164,11 @@ export function Plan() {
                           </span>
                         </div>
                         <div className="flex items-center gap-1">
+                          {recipe.source === "user-upload" && (
+                            <Badge className="text-xs px-1.5 py-0 h-5 bg-[#4E2A84] text-white hover:bg-[#4E2A84]">
+                              User Upload
+                            </Badge>
+                          )}
                           <Badge variant="secondary" className="text-xs px-1.5 py-0 h-5">
                             {recipe.difficulty}
                           </Badge>
@@ -239,6 +244,11 @@ export function Plan() {
 
                 {/* Tags */}
                 <div className="flex flex-wrap gap-2 mb-6">
+                  {selectedRecipe.source === "user-upload" && (
+                    <Badge className="bg-[#4E2A84] text-white hover:bg-[#4E2A84]">
+                      User Upload
+                    </Badge>
+                  )}
                   {selectedRecipe.tags.map((tag) => (
                     <Badge key={tag} variant="secondary" className="bg-purple-50 text-[#4E2A84] hover:bg-purple-100">
                       {tag}
