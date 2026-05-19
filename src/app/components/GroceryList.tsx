@@ -1,4 +1,4 @@
-import { useRef, useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Link } from "react-router";
 import { ArrowLeft, Printer, Share, CheckCircle2, Circle } from "lucide-react";
 import { useAppContext } from "../context/AppContext";
@@ -11,6 +11,7 @@ type GroceryItem = {
 };
 
 const SAVED_LISTS_KEY = "ziplist.savedGroceryLists";
+const ACTIVE_GROCERY_LIST_KEY = "ziplist.activeGroceryList";
 
 const categoryNames: Record<string, string> = {
   produce: "Produce",
@@ -24,12 +25,24 @@ const categoryNames: Record<string, string> = {
 
 export function GroceryList() {
   const { allRecipes, selectedMeals } = useAppContext();
-  const topRef = useRef<HTMLDivElement>(null);
   const [checkedItems, setCheckedItems] = useState<Set<string>>(new Set());
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [highlightActions, setHighlightActions] = useState(false);
 
   const mealsToShop = allRecipes.filter(r => selectedMeals.has(r.id));
+
+  useEffect(() => {
+    try {
+      const savedList = JSON.parse(localStorage.getItem(ACTIVE_GROCERY_LIST_KEY) || "null");
+      if (!savedList || !Array.isArray(savedList.checkedItems)) {
+        return;
+      }
+
+      setCheckedItems(new Set(savedList.checkedItems));
+    } catch {
+      setCheckedItems(new Set());
+    }
+  }, []);
 
   const { itemsByCategory, grandTotal } = useMemo(() => {
     const itemsMap = new Map<string, GroceryItem>();
@@ -138,8 +151,9 @@ export function GroceryList() {
     try {
       const previousLists = JSON.parse(localStorage.getItem(SAVED_LISTS_KEY) || "[]");
       const savedLists = Array.isArray(previousLists) ? previousLists : [];
+      localStorage.setItem(ACTIVE_GROCERY_LIST_KEY, JSON.stringify(savedList));
       localStorage.setItem(SAVED_LISTS_KEY, JSON.stringify([savedList, ...savedLists]));
-      topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      window.scrollTo({ top: 0, behavior: "smooth" });
       setHighlightActions(true);
       window.setTimeout(() => setHighlightActions(false), 3500);
       showStatus("Grocery list saved. Share it or print it from here.");
@@ -159,7 +173,7 @@ export function GroceryList() {
   }
 
   return (
-    <div ref={topRef} className="max-w-3xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20">
+    <div className="max-w-3xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20">
       <div className="flex items-center justify-between mb-8">
         <div>
           <Link to="/plan" className="inline-flex items-center text-slate-500 hover:text-[#4E2A84] mb-2 text-sm font-medium">

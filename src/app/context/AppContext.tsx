@@ -3,6 +3,8 @@ import { Recipe } from "../types/Recipe";
 import { RecipeDatabase } from "../database/RecipeDatabase";
 import { ALL_SEED_RECIPES } from "../database/seedData";
 
+const ACTIVE_GROCERY_LIST_KEY = "ziplist.activeGroceryList";
+
 // Backward compatibility export for existing components
 export type { Recipe };
 
@@ -32,6 +34,23 @@ type AppContextType = {
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
+function loadSavedMealIds(): Set<string> {
+  try {
+    if (typeof localStorage === "undefined") {
+      return new Set();
+    }
+
+    const savedList = JSON.parse(localStorage.getItem(ACTIVE_GROCERY_LIST_KEY) || "null");
+    if (!savedList || !Array.isArray(savedList.mealIds)) {
+      return new Set();
+    }
+
+    return new Set(savedList.mealIds);
+  } catch {
+    return new Set();
+  }
+}
+
 export function AppProvider({ children }: { children: ReactNode }) {
   // Initialize database with seed data
   const recipeDB = useMemo(() => new RecipeDatabase(ALL_SEED_RECIPES), []);
@@ -39,7 +58,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   // State for backward compatibility
   const [allRecipes, setAllRecipes] = useState<Recipe[]>(ALL_SEED_RECIPES);
   const [weeklyMeals, setWeeklyMeals] = useState<Recipe[]>([]);
-  const [selectedMeals, setSelectedMeals] = useState<Set<string>>(new Set());
+  const [selectedMeals, setSelectedMeals] = useState<Set<string>>(() => loadSavedMealIds());
 
   // Refresh recipes from database
   const refreshRecipes = async () => {
