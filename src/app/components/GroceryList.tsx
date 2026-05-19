@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useRef, useState, useMemo } from "react";
 import { Link } from "react-router";
 import { ArrowLeft, Printer, Share, CheckCircle2, Circle } from "lucide-react";
 import { useAppContext } from "../context/AppContext";
@@ -24,8 +24,10 @@ const categoryNames: Record<string, string> = {
 
 export function GroceryList() {
   const { allRecipes, selectedMeals } = useAppContext();
+  const topRef = useRef<HTMLDivElement>(null);
   const [checkedItems, setCheckedItems] = useState<Set<string>>(new Set());
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
+  const [highlightActions, setHighlightActions] = useState(false);
 
   const mealsToShop = allRecipes.filter(r => selectedMeals.has(r.id));
 
@@ -137,7 +139,10 @@ export function GroceryList() {
       const previousLists = JSON.parse(localStorage.getItem(SAVED_LISTS_KEY) || "[]");
       const savedLists = Array.isArray(previousLists) ? previousLists : [];
       localStorage.setItem(SAVED_LISTS_KEY, JSON.stringify([savedList, ...savedLists]));
-      showStatus("Grocery list saved.");
+      topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      setHighlightActions(true);
+      window.setTimeout(() => setHighlightActions(false), 3500);
+      showStatus("Grocery list saved. Share it or print it from here.");
     } catch {
       showStatus("Could not save this list.");
     }
@@ -154,7 +159,7 @@ export function GroceryList() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20">
+    <div ref={topRef} className="max-w-3xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20">
       <div className="flex items-center justify-between mb-8">
         <div>
           <Link to="/plan" className="inline-flex items-center text-slate-500 hover:text-[#4E2A84] mb-2 text-sm font-medium">
@@ -167,7 +172,11 @@ export function GroceryList() {
           <button
             type="button"
             onClick={handlePrint}
-            className="p-3 bg-white text-slate-600 rounded-full border border-slate-200 hover:bg-slate-50 shadow-sm transition-colors"
+            className={`p-3 rounded-full border shadow-sm transition-all ${
+              highlightActions
+                ? "bg-purple-50 text-[#4E2A84] border-[#4E2A84] ring-4 ring-purple-100 scale-110"
+                : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
+            }`}
             aria-label="Print grocery list"
             title="Print grocery list"
           >
@@ -176,7 +185,11 @@ export function GroceryList() {
           <button
             type="button"
             onClick={handleShare}
-            className="p-3 bg-white text-slate-600 rounded-full border border-slate-200 hover:bg-slate-50 shadow-sm transition-colors"
+            className={`p-3 rounded-full border shadow-sm transition-all ${
+              highlightActions
+                ? "bg-purple-50 text-[#4E2A84] border-[#4E2A84] ring-4 ring-purple-100 scale-110"
+                : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
+            }`}
             aria-label="Share grocery list"
             title="Share grocery list"
           >
