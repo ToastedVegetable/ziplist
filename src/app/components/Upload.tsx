@@ -32,6 +32,26 @@ function blankIngredient(): IngredientDraft {
   return { name: "", category: "pantry", quantity: "", cost: "" };
 }
 
+function getUploadErrorMessage(error: unknown): string {
+  if (!(error instanceof Error)) {
+    return "Something went wrong saving the recipe. Please try again.";
+  }
+
+  if (error.message.includes("row-level security") || error.message.includes("permission denied")) {
+    return "The shared recipe database is blocking uploads right now. Please check the Supabase insert policy.";
+  }
+
+  if (error.message.includes("Failed to fetch")) {
+    return "Could not reach the shared recipe database. Please check your connection and try again.";
+  }
+
+  if (error.message.includes("Could not save recipe:")) {
+    return `Could not save recipe. ${error.message.replace("Could not save recipe:", "").trim()}`;
+  }
+
+  return "Something went wrong saving the recipe. Please try again.";
+}
+
 export function Upload() {
   const { recipeDB, refreshRecipes } = useAppContext();
   const navigate = useNavigate();
@@ -158,7 +178,7 @@ export function Upload() {
       reset();
       setTimeout(() => setIsSuccess(false), 4000);
     } catch (e) {
-      setError("Something went wrong saving the recipe. Please try again.");
+      setError(getUploadErrorMessage(e));
     } finally {
       setIsSubmitting(false);
     }

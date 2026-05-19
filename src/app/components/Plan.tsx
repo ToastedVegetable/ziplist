@@ -56,11 +56,8 @@ export function Plan() {
       return;
     }
 
-    const nextSelectedMeals = new Set(selectedMeals);
-    weeklyRecipes.forEach((recipe) => nextSelectedMeals.add(recipe.id));
-
     setWeeklyMeals(weeklyRecipes);
-    setSelectedMeals(nextSelectedMeals);
+    setSelectedMeals(new Set(weeklyRecipes.map((recipe) => recipe.id)));
     setSelectedRecipe(weeklyRecipes[0]);
     navigate("/grocery-list");
   };

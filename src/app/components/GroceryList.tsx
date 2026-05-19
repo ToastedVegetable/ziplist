@@ -30,19 +30,24 @@ export function GroceryList() {
   const [highlightActions, setHighlightActions] = useState(false);
 
   const mealsToShop = allRecipes.filter(r => selectedMeals.has(r.id));
+  const selectedMealSignature = useMemo(() => {
+    return Array.from(selectedMeals).sort().join("|");
+  }, [selectedMeals]);
 
   useEffect(() => {
     try {
       const savedList = JSON.parse(localStorage.getItem(ACTIVE_GROCERY_LIST_KEY) || "null");
-      if (!savedList || !Array.isArray(savedList.checkedItems)) {
+      if (!savedList || !Array.isArray(savedList.mealIds) || !Array.isArray(savedList.checkedItems)) {
+        setCheckedItems(new Set());
         return;
       }
 
-      setCheckedItems(new Set(savedList.checkedItems));
+      const savedMealSignature = [...savedList.mealIds].sort().join("|");
+      setCheckedItems(savedMealSignature === selectedMealSignature ? new Set(savedList.checkedItems) : new Set());
     } catch {
       setCheckedItems(new Set());
     }
-  }, []);
+  }, [selectedMealSignature]);
 
   const { itemsByCategory, grandTotal } = useMemo(() => {
     const itemsMap = new Map<string, GroceryItem>();
@@ -271,7 +276,7 @@ export function GroceryList() {
 
       <div className="mt-8 flex justify-center gap-4 print:hidden">
         <Link to="/plan" className="bg-white text-slate-600 border border-slate-200 px-6 py-3 rounded-xl font-bold hover:bg-slate-50 transition-colors">
-          Swap Meal
+          Back to Meals
         </Link>
         <button
           type="button"

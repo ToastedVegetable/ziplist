@@ -471,6 +471,17 @@ export function WheelPage() {
                   {isSpinning ? "Spinning..." : wheelRecipes.length === 0 ? "All Recipes Picked" : "Spin the Wheel!"}
                 </Button>
 
+                {wheelRecipes.length === 0 && !isSpinning && (
+                  <Button
+                    onClick={clearPicked}
+                    variant="outline"
+                    className="w-full border-[#4E2A84]/30 text-[#4E2A84] hover:bg-purple-50 gap-2"
+                  >
+                    <RefreshCw size={16} />
+                    Refill Wheel
+                  </Button>
+                )}
+
                 {selectedRecipe && !isSpinning && (
                   <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-4 border-2 border-[#4E2A84]/30 animate-in fade-in slide-in-from-bottom-4">
                     <div className="flex items-center gap-3">
