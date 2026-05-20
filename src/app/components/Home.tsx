@@ -6,7 +6,7 @@ export function Home() {
     <div className="flex flex-col items-center justify-center py-12 text-center animate-in fade-in slide-in-from-bottom-4 duration-500">
       <h1 className="text-5xl font-extrabold text-[#4E2A84] tracking-tight mb-4">ziplist</h1>
       <p className="text-xl text-slate-500 mb-16 max-w-lg">
-        Decide what to eat without overthinking it.
+        Decide what to eat without overthinking it
       </p>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full">

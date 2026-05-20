@@ -145,8 +145,12 @@ export class RecipeDatabase {
   private nextId: number;
 
   constructor(initialRecipes: Recipe[] = []) {
-    const storedRecipes = this.loadStoredRecipes();
+    const storedRecipes = isSupabaseEnabled() ? [] : this.loadStoredRecipes();
     const recipesById = new Map<string, Recipe>();
+
+    if (isSupabaseEnabled()) {
+      this.clearStoredUserRecipes();
+    }
 
     storedRecipes.forEach(recipe => recipesById.set(recipe.id, recipe));
     initialRecipes.forEach(recipe => {
@@ -180,7 +184,7 @@ export class RecipeDatabase {
   }
 
   private persistUserRecipes(): void {
-    if (!storageAvailable()) {
+    if (!storageAvailable() || isSupabaseEnabled()) {
       return;
     }
 
@@ -193,11 +197,23 @@ export class RecipeDatabase {
     }
   }
 
+  private clearStoredUserRecipes(): void {
+    if (!storageAvailable()) {
+      return;
+    }
+
+    try {
+      window.localStorage.removeItem(STORAGE_KEY);
+    } catch (error) {
+      console.warn("Could not clear saved local recipes", error);
+    }
+  }
+
   private mergeRemoteRecipes(remoteRecipes: Recipe[]): Recipe[] {
     const recipesById = new Map<string, Recipe>();
 
     remoteRecipes.forEach(recipe => recipesById.set(recipe.id, recipe));
-    this.recipes.forEach(recipe => {
+    this.recipes.filter(recipe => recipe.source === "system").forEach(recipe => {
       if (!recipesById.has(recipe.id)) {
         recipesById.set(recipe.id, recipe);
       }
@@ -248,7 +264,6 @@ export class RecipeDatabase {
     if (isSupabaseEnabled()) {
       const remoteRecipe = await this.createRemoteRecipe(input);
       this.recipes.unshift(remoteRecipe);
-      this.persistUserRecipes();
       return remoteRecipe;
     }
 
