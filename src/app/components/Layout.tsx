@@ -12,6 +12,7 @@ export function Layout() {
           </Link>
           <nav className="flex items-center gap-6 text-sm font-medium text-slate-600">
             <Link to="/plan" className="hover:text-[#4E2A84] transition-colors">Plan Meals</Link>
+            <Link to="/ingredient-search" className="hover:text-[#4E2A84] transition-colors">Search Ingredients</Link>
             <Link to="/grocery-list" className="hover:text-[#4E2A84] transition-colors">Grocery List</Link>
             <Link to="/wheel" className="hover:text-[#4E2A84] transition-colors">Spin Wheel</Link>
             <Link to="/upload" className="hover:text-[#4E2A84] transition-colors">Add Recipe</Link>

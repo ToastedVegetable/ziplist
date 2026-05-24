@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import { Search, Shuffle, Plus } from "lucide-react";
+import { ListFilter, Search, Shuffle, Plus } from "lucide-react";
 
 export function Home() {
   return (
@@ -9,7 +9,7 @@ export function Home() {
         Decide what to eat without overthinking it
       </p>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 w-full">
         {/* Card 1 */}
         <div className="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 flex flex-col items-center text-center hover:shadow-md transition-shadow">
           <div className="w-20 h-20 rounded-full bg-purple-50 flex items-center justify-center mb-6">
@@ -30,6 +30,23 @@ export function Home() {
         {/* Card 2 */}
         <div className="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 flex flex-col items-center text-center hover:shadow-md transition-shadow">
           <div className="w-20 h-20 rounded-full bg-purple-50 flex items-center justify-center mb-6">
+            <ListFilter size={32} className="text-[#4E2A84]" />
+          </div>
+          <h2 className="text-2xl font-bold mb-3 text-slate-800">Search Ingredients</h2>
+          <p className="text-slate-500 mb-8 flex-1">
+            Find recipes that use ingredients you already have on hand.
+          </p>
+          <Link
+            to="/ingredient-search"
+            className="w-full bg-white text-[#4E2A84] border-2 border-[#4E2A84] py-3 px-6 rounded-full font-semibold hover:bg-purple-50 transition-colors"
+          >
+            Search Ingredients
+          </Link>
+        </div>
+
+        {/* Card 3 */}
+        <div className="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 flex flex-col items-center text-center hover:shadow-md transition-shadow">
+          <div className="w-20 h-20 rounded-full bg-purple-50 flex items-center justify-center mb-6">
             <Shuffle size={32} className="text-[#4E2A84]" />
           </div>
           <h2 className="text-2xl font-bold mb-3 text-slate-800">Random Choice</h2>
@@ -44,7 +61,7 @@ export function Home() {
           </Link>
         </div>
 
-        {/* Card 3 */}
+        {/* Card 4 */}
         <div className="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 flex flex-col items-center text-center hover:shadow-md transition-shadow">
           <div className="w-20 h-20 rounded-full bg-purple-50 flex items-center justify-center mb-6">
             <Plus size={32} className="text-[#4E2A84]" />
