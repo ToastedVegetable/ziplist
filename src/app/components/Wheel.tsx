@@ -128,7 +128,7 @@ export function WheelPage() {
     if (!ctx) return;
 
     const centerX = canvas.width / 2;
-    const centerY = canvas.height / 2;
+    const centerY = canvas.width / 2;
     const radius = 180;
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -199,11 +199,14 @@ export function WheelPage() {
     ctx.lineWidth = 4;
     ctx.stroke();
 
-    // Pointer (fixed at bottom)
+    // Pointer (fixed below the wheel, pointing up at the selected slice)
+    const pointerTipY = centerY + radius + 6;
+    const pointerBaseY = pointerTipY + 30;
+
     ctx.beginPath();
-    ctx.moveTo(centerX, canvas.height - 20);
-    ctx.lineTo(centerX - 15, canvas.height - 50);
-    ctx.lineTo(centerX + 15, canvas.height - 50);
+    ctx.moveTo(centerX, pointerTipY);
+    ctx.lineTo(centerX - 16, pointerBaseY);
+    ctx.lineTo(centerX + 16, pointerBaseY);
     ctx.closePath();
     ctx.fillStyle = '#EF4444';
     ctx.fill();
@@ -464,7 +467,7 @@ export function WheelPage() {
                 <canvas
                   ref={canvasRef}
                   width="400"
-                  height="400"
+                  height="430"
                   className="drop-shadow-xl"
                 />
               </div>
