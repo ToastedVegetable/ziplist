@@ -64,6 +64,7 @@ export function IngredientSearch() {
     <div className="max-w-5xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20">
       <Link
         to="/"
+        aria-label="Go back to home"
         className="inline-flex items-center text-slate-500 hover:text-[#4E2A84] mb-6 font-medium"
       >
         <ArrowLeft size={16} className="mr-1" /> Back home
@@ -123,7 +124,11 @@ export function IngredientSearch() {
             <p className="text-sm font-medium text-slate-500">
               {matchedRecipes.length} {matchedRecipes.length === 1 ? "recipe" : "recipes"} found
             </p>
-            <Link to="/grocery-list" className="text-sm font-semibold text-[#4E2A84] hover:text-[#3d2168]">
+            <Link
+              to="/grocery-list"
+              aria-label={`Open grocery list with ${selectedMeals.size} selected meals`}
+              className="text-sm font-semibold text-[#4E2A84] hover:text-[#3d2168]"
+            >
               Grocery List ({selectedMeals.size})
             </Link>
           </div>
@@ -137,7 +142,11 @@ export function IngredientSearch() {
                   key={recipe.id}
                   className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden flex flex-col"
                 >
-                  <Link to={`/plan?recipe=${encodeURIComponent(recipe.id)}`} className="block">
+                  <Link
+                    to={`/plan?recipe=${encodeURIComponent(recipe.id)}`}
+                    aria-label={`View ${recipe.name} recipe details`}
+                    className="block"
+                  >
                     <div className="relative h-48 overflow-hidden">
                       <img
                         src={recipe.image}
@@ -153,7 +162,10 @@ export function IngredientSearch() {
                   </Link>
 
                   <div className="p-5 flex flex-col flex-1">
-                    <Link to={`/plan?recipe=${encodeURIComponent(recipe.id)}`}>
+                    <Link
+                      to={`/plan?recipe=${encodeURIComponent(recipe.id)}`}
+                      aria-label={`View ${recipe.name} recipe details`}
+                    >
                       <h2 className="text-xl font-bold text-slate-800 hover:text-[#4E2A84] transition-colors mb-2">
                         {recipe.name}
                       </h2>
@@ -198,6 +210,11 @@ export function IngredientSearch() {
 
                     <Button
                       onClick={() => toggleMealSelection(recipe.id)}
+                      aria-label={
+                        isSelected
+                          ? `Remove ${recipe.name} from grocery list`
+                          : `Add ${recipe.name} to grocery list`
+                      }
                       className={`mt-auto w-full ${
                         isSelected
                           ? "bg-slate-200 text-slate-700 hover:bg-slate-300"

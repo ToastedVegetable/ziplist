@@ -87,7 +87,11 @@ export function Plan() {
       {/* Header */}
       <div className="border-b border-slate-200 bg-white px-6 py-4 flex items-center justify-between flex-shrink-0">
         <div className="flex items-center gap-4">
-          <Link to="/" className="text-slate-500 hover:text-[#4E2A84] transition-colors">
+          <Link
+            to="/"
+            aria-label="Go back to home"
+            className="text-slate-500 hover:text-[#4E2A84] transition-colors"
+          >
             <ArrowLeft size={20} />
           </Link>
           <div>
@@ -101,13 +105,17 @@ export function Plan() {
             onClick={chooseWeekMeals}
             disabled={recipes.length === 0}
             variant="outline"
+            aria-label="Pick 14 random meals for the week"
             className="border-[#4E2A84]/30 text-[#4E2A84] hover:bg-purple-50 gap-2"
           >
             <Sparkles size={18} />
             Pick My Week
           </Button>
-          <Link to="/grocery-list">
-            <Button className="bg-[#4E2A84] hover:bg-[#3d2168]">
+          <Link to="/grocery-list" aria-label={`Open grocery list with ${selectedMeals.size} selected meals`}>
+            <Button
+              aria-label={`Open grocery list with ${selectedMeals.size} selected meals`}
+              className="bg-[#4E2A84] hover:bg-[#3d2168]"
+            >
               <ShoppingCart size={18} className="mr-2" />
               Grocery List ({selectedMeals.size})
             </Button>
@@ -131,6 +139,7 @@ export function Plan() {
                   <button
                     key={recipe.id}
                     onClick={() => setSelectedRecipe(recipe)}
+                    aria-label={`View details for ${recipe.name}`}
                     className={`w-full text-left p-3 rounded-lg mb-2 transition-all ${
                       isSelected
                         ? "bg-white shadow-sm border border-[#4E2A84]/20"
@@ -312,6 +321,11 @@ export function Plan() {
                 <div className="sticky bottom-0 bg-white pt-6 pb-2 border-t border-slate-200 -mx-8 px-8">
                   <Button
                     onClick={() => toggleMealSelection(selectedRecipe.id)}
+                    aria-label={
+                      selectedMeals.has(selectedRecipe.id)
+                        ? `Remove ${selectedRecipe.name} from grocery list`
+                        : `Add ${selectedRecipe.name} to grocery list`
+                    }
                     className={`w-full py-6 text-lg font-semibold ${
                       selectedMeals.has(selectedRecipe.id)
                         ? "bg-slate-200 text-slate-700 hover:bg-slate-300"

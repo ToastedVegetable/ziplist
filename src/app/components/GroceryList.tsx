@@ -172,7 +172,13 @@ export function GroceryList() {
       <div className="text-center py-20 animate-in fade-in">
         <h2 className="text-2xl font-bold text-slate-700 mb-4">Your grocery list is empty.</h2>
         <p className="text-slate-500 mb-8">Go back and select some meals to plan your list.</p>
-        <Link to="/plan" className="bg-[#4E2A84] text-white px-6 py-3 rounded-full font-bold hover:bg-[#3d2168]">Plan Meals</Link>
+        <Link
+          to="/plan"
+          aria-label="Plan meals to build a grocery list"
+          className="bg-[#4E2A84] text-white px-6 py-3 rounded-full font-bold hover:bg-[#3d2168]"
+        >
+          Plan Meals
+        </Link>
       </div>
     );
   }
@@ -181,7 +187,11 @@ export function GroceryList() {
     <div className="max-w-3xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <Link to="/plan" className="inline-flex items-center text-slate-500 hover:text-[#4E2A84] mb-2 text-sm font-medium">
+          <Link
+            to="/plan"
+            aria-label="Go back to meals"
+            className="inline-flex items-center text-slate-500 hover:text-[#4E2A84] mb-2 text-sm font-medium"
+          >
             <ArrowLeft size={16} className="mr-1" /> Back to meals
           </Link>
           <h1 className="text-3xl font-bold text-slate-800">Your grocery list for the week</h1>
@@ -275,12 +285,17 @@ export function GroceryList() {
       </div>
 
       <div className="mt-8 flex justify-center gap-4 print:hidden">
-        <Link to="/plan" className="bg-white text-slate-600 border border-slate-200 px-6 py-3 rounded-xl font-bold hover:bg-slate-50 transition-colors">
+        <Link
+          to="/plan"
+          aria-label="Go back to meal planning"
+          className="bg-white text-slate-600 border border-slate-200 px-6 py-3 rounded-xl font-bold hover:bg-slate-50 transition-colors"
+        >
           Back to Meals
         </Link>
         <button
           type="button"
           onClick={handleSaveList}
+          aria-label="Save this grocery list"
           className="bg-[#4E2A84] text-white px-8 py-3 rounded-xl font-bold shadow-md hover:bg-[#3d2168] transition-colors"
         >
           Save List

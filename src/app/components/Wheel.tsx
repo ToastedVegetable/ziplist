@@ -316,7 +316,11 @@ export function WheelPage() {
       {/* Header */}
       <div className="border-b border-slate-200 bg-white/80 backdrop-blur px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Link to="/" className="text-slate-500 hover:text-[#4E2A84] transition-colors">
+          <Link
+            to="/"
+            aria-label="Go back to home"
+            className="text-slate-500 hover:text-[#4E2A84] transition-colors"
+          >
             <ArrowLeft size={20} />
           </Link>
           <div>
@@ -328,6 +332,7 @@ export function WheelPage() {
         <Button
           onClick={() => setShowConfig(!showConfig)}
           variant="outline"
+          aria-label={showConfig ? "Hide wheel configuration" : "Show wheel configuration"}
           className="gap-2"
         >
           <Settings2 size={18} />
@@ -347,6 +352,7 @@ export function WheelPage() {
                   variant="ghost"
                   size="sm"
                   onClick={() => setShowConfig(false)}
+                  aria-label="Close wheel configuration"
                 >
                   <X size={18} />
                 </Button>
@@ -421,6 +427,7 @@ export function WheelPage() {
 
                 <Button
                   onClick={regenerateWheel}
+                  aria-label="Regenerate the recipe wheel"
                   className="w-full bg-[#4E2A84] hover:bg-[#3d2168] gap-2"
                 >
                   <RefreshCw size={16} />
@@ -430,6 +437,7 @@ export function WheelPage() {
                   <Button
                     onClick={useAllRecipes}
                     variant="outline"
+                    aria-label="Use all recipes for the wheel"
                     className="w-full border-slate-200 text-slate-600 hover:bg-slate-50"
                   >
                     Use All Recipes
@@ -465,6 +473,7 @@ export function WheelPage() {
                 <Button
                   onClick={spinWheel}
                   disabled={isSpinning || wheelRecipes.length === 0}
+                  aria-label="Spin the recipe wheel"
                   className="w-full py-6 text-lg font-bold bg-gradient-to-r from-[#4E2A84] to-[#6B46A8] hover:from-[#3d2168] hover:to-[#5a3890] disabled:opacity-50 gap-2"
                 >
                   <Sparkles size={20} />
@@ -475,6 +484,7 @@ export function WheelPage() {
                   <Button
                     onClick={clearPicked}
                     variant="outline"
+                    aria-label="Refill the recipe wheel"
                     className="w-full border-[#4E2A84]/30 text-[#4E2A84] hover:bg-purple-50 gap-2"
                   >
                     <RefreshCw size={16} />
@@ -533,6 +543,7 @@ export function WheelPage() {
                   variant="ghost"
                   size="sm"
                   onClick={clearPicked}
+                  aria-label="Clear selected recipes"
                   className="text-slate-500 hover:text-red-500"
                 >
                   <Trash2 size={16} />
@@ -588,6 +599,7 @@ export function WheelPage() {
                         variant="ghost"
                         size="sm"
                         onClick={() => removeFromPicked(recipe.id)}
+                        aria-label={`Remove ${recipe.name} from selections`}
                         className="opacity-0 group-hover:opacity-100 transition-opacity"
                       >
                         <X size={16} />
@@ -611,9 +623,14 @@ export function WheelPage() {
                 </span>
               </div>
               <Separator />
-              <Link to="/grocery-list" className="block">
+              <Link
+                to="/grocery-list"
+                aria-label="Open grocery list with selected recipes"
+                className="block"
+              >
                 <Button
                   onClick={addAllToCart}
+                  aria-label="Add all selected recipes to grocery list"
                   className="w-full bg-[#4E2A84] hover:bg-[#3d2168] gap-2"
                 >
                   <ShoppingCart size={18} />

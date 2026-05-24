@@ -188,6 +188,7 @@ export function Upload() {
     <div className="max-w-2xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20">
       <Link
         to="/"
+        aria-label="Go back to home"
         className="inline-flex items-center text-slate-500 hover:text-[#4E2A84] mb-6 font-medium"
       >
         <ArrowLeft size={16} className="mr-1" /> Back home
@@ -208,6 +209,7 @@ export function Upload() {
             </div>
             <button
               onClick={() => navigate(uploadedRecipeId ? `/plan?recipe=${encodeURIComponent(uploadedRecipeId)}` : "/plan")}
+              aria-label="View uploaded recipe"
               className="text-sm font-semibold underline hover:no-underline"
             >
               View it
@@ -218,7 +220,11 @@ export function Upload() {
         {error && (
           <div className="mb-6 bg-red-50 text-red-700 p-4 rounded-xl flex items-center justify-between gap-3 font-medium border border-red-200">
             <span>{error}</span>
-            <button onClick={() => setError(null)} className="text-red-700/70 hover:text-red-700">
+            <button
+              onClick={() => setError(null)}
+              aria-label="Dismiss upload error"
+              className="text-red-700/70 hover:text-red-700"
+            >
               <X size={18} />
             </button>
           </div>
@@ -255,6 +261,7 @@ export function Upload() {
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
+                aria-label="Choose a recipe image to upload"
                 className="w-full h-32 border-2 border-dashed border-slate-200 rounded-2xl flex flex-col items-center justify-center text-slate-400 bg-slate-50 hover:bg-slate-100 hover:border-slate-300 cursor-pointer transition-colors"
               >
                 <ImageIcon size={32} className="mb-2" />
@@ -410,6 +417,7 @@ export function Upload() {
             <button
               type="button"
               onClick={addIngredient}
+              aria-label="Add another ingredient"
               className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-[#4E2A84] hover:text-[#3d2168]"
             >
               <Plus size={16} /> Add ingredient
@@ -433,6 +441,7 @@ export function Upload() {
           <button
             type="button"
             onClick={reset}
+            aria-label="Reset recipe upload form"
             className="flex-1 bg-slate-100 text-slate-700 py-3 rounded-xl font-bold hover:bg-slate-200 transition-colors"
           >
             Reset
@@ -441,6 +450,7 @@ export function Upload() {
             type="button"
             onClick={handleUpload}
             disabled={isSubmitting}
+            aria-label="Upload recipe"
             className="flex-1 bg-[#4E2A84] text-white py-3 rounded-xl font-bold hover:bg-[#3d2168] transition-colors disabled:opacity-50"
           >
             {isSubmitting ? "Saving..." : "Upload"}

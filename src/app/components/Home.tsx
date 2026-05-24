@@ -21,6 +21,7 @@ export function Home() {
           </p>
           <Link
             to="/plan"
+            aria-label="Plan meals by browsing recipes"
             className="w-full bg-[#4E2A84] text-white py-3 px-6 rounded-full font-semibold hover:bg-[#3d2168] transition-colors"
           >
             Plan My Meals
@@ -38,6 +39,7 @@ export function Home() {
           </p>
           <Link
             to="/ingredient-search"
+            aria-label="Search recipes by ingredient"
             className="w-full bg-white text-[#4E2A84] border-2 border-[#4E2A84] py-3 px-6 rounded-full font-semibold hover:bg-purple-50 transition-colors"
           >
             Search Ingredients
@@ -55,6 +57,7 @@ export function Home() {
           </p>
           <Link
             to="/wheel"
+            aria-label="Open the random recipe wheel"
             className="w-full bg-white text-[#4E2A84] border-2 border-[#4E2A84] py-3 px-6 rounded-full font-semibold hover:bg-purple-50 transition-colors"
           >
             Spin the Wheel
@@ -72,6 +75,7 @@ export function Home() {
           </p>
           <Link
             to="/upload"
+            aria-label="Add a new recipe"
             className="w-full bg-slate-100 text-slate-700 py-3 px-6 rounded-full font-semibold hover:bg-slate-200 transition-colors"
           >
             Add Recipe
