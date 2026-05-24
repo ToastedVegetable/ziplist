@@ -185,7 +185,7 @@ export function GroceryList() {
 
   return (
     <div className="max-w-3xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20">
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
           <Link
             to="/plan"
@@ -194,7 +194,7 @@ export function GroceryList() {
           >
             <ArrowLeft size={16} className="mr-1" /> Back to meals
           </Link>
-          <h1 className="text-3xl font-bold text-slate-800">Your grocery list for the week</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-slate-800">Your grocery list for the week</h1>
           <p className="text-slate-500 mt-1">Based on your {mealsToShop.length} selected meals.</p>
         </div>
         <div className="flex gap-3 print:hidden">
@@ -245,7 +245,7 @@ export function GroceryList() {
                 return (
                   <li 
                     key={item.name} 
-                    className={`flex items-center justify-between px-6 py-4 cursor-pointer hover:bg-slate-50/50 transition-colors ${isChecked ? 'opacity-50' : ''}`}
+                    className={`flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-4 sm:px-6 py-4 cursor-pointer hover:bg-slate-50/50 transition-colors ${isChecked ? 'opacity-50' : ''}`}
                     onClick={() => toggleCheck(item.name)}
                   >
                     <div className="flex items-center gap-4">
@@ -263,7 +263,7 @@ export function GroceryList() {
                         </div>
                       </div>
                     </div>
-                    <div className="font-medium text-slate-600">
+                    <div className="font-medium text-slate-600 self-end sm:self-auto">
                       ${item.totalCost.toFixed(2)}
                     </div>
                   </li>
@@ -273,22 +273,22 @@ export function GroceryList() {
           </div>
         ))}
         
-        <div className="bg-purple-50 px-6 py-6 flex items-center justify-between border-t border-purple-100">
+        <div className="bg-purple-50 px-4 sm:px-6 py-6 flex items-center justify-between gap-4 border-t border-purple-100">
           <div>
             <h3 className="text-xl font-bold text-[#4E2A84]">Estimated Total</h3>
             <p className="text-sm text-purple-700/70">Prices may vary by store</p>
           </div>
-          <div className="text-3xl font-extrabold text-[#4E2A84]">
+          <div className="text-2xl sm:text-3xl font-extrabold text-[#4E2A84]">
             ${grandTotal.toFixed(2)}
           </div>
         </div>
       </div>
 
-      <div className="mt-8 flex justify-center gap-4 print:hidden">
+      <div className="mt-8 flex flex-col sm:flex-row justify-center gap-4 print:hidden">
         <Link
           to="/plan"
           aria-label="Go back to meal planning"
-          className="bg-white text-slate-600 border border-slate-200 px-6 py-3 rounded-xl font-bold hover:bg-slate-50 transition-colors"
+          className="bg-white text-slate-600 border border-slate-200 px-6 py-3 rounded-xl font-bold hover:bg-slate-50 transition-colors text-center"
         >
           Back to Meals
         </Link>

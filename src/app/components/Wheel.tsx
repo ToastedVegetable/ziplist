@@ -317,7 +317,7 @@ export function WheelPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-white">
       {/* Header */}
-      <div className="border-b border-slate-200 bg-white/80 backdrop-blur px-6 py-4 flex items-center justify-between">
+      <div className="border-b border-slate-200 bg-white/80 backdrop-blur px-4 sm:px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-4">
           <Link
             to="/"
@@ -336,19 +336,19 @@ export function WheelPage() {
           onClick={() => setShowConfig(!showConfig)}
           variant="outline"
           aria-label={showConfig ? "Hide wheel configuration" : "Show wheel configuration"}
-          className="gap-2"
+          className="w-full sm:w-auto gap-2"
         >
           <Settings2 size={18} />
           Configure Wheel
         </Button>
       </div>
 
-      <div className="container mx-auto p-6 grid lg:grid-cols-[1fr,400px] gap-6">
+      <div className="container mx-auto p-4 sm:p-6 grid lg:grid-cols-[minmax(0,1fr),400px] gap-6">
         {/* Left: Wheel Section */}
         <div className="space-y-6">
           {/* Configuration Panel */}
           {showConfig && (
-            <Card className="p-6 bg-white border-2 border-[#4E2A84]/20">
+            <Card className="p-4 sm:p-6 bg-white border-2 border-[#4E2A84]/20">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-bold text-slate-800">Wheel Configuration</h2>
                 <Button
@@ -451,7 +451,7 @@ export function WheelPage() {
           )}
 
           {/* Wheel Display */}
-          <Card className="p-8 bg-white">
+          <Card className="p-4 sm:p-8 bg-white">
             <div className="flex flex-col items-center">
               {usingWeeklyMeals && weeklyMeals.length > 0 && (
                 <div className="mb-5 w-full max-w-md rounded-xl border border-purple-100 bg-purple-50 px-4 py-3 text-center">
@@ -463,12 +463,12 @@ export function WheelPage() {
                   </p>
                 </div>
               )}
-              <div className="relative">
+              <div className="relative w-full flex justify-center overflow-hidden">
                 <canvas
                   ref={canvasRef}
                   width="400"
                   height="430"
-                  className="drop-shadow-xl"
+                  className="w-full max-w-[400px] h-auto drop-shadow-xl"
                 />
               </div>
 
@@ -537,7 +537,7 @@ export function WheelPage() {
         </div>
 
         {/* Right: Selection List */}
-        <div className="bg-white rounded-xl border border-slate-200 shadow-sm flex flex-col h-[calc(100vh-120px)] sticky top-6">
+        <div className="bg-white rounded-xl border border-slate-200 shadow-sm flex flex-col max-h-[75vh] lg:h-[calc(100vh-120px)] lg:max-h-none lg:sticky lg:top-6">
           <div className="p-4 border-b border-slate-200">
             <div className="flex items-center justify-between mb-2">
               <h2 className="text-lg font-bold text-slate-800">Your Selections</h2>
@@ -603,7 +603,7 @@ export function WheelPage() {
                         size="sm"
                         onClick={() => removeFromPicked(recipe.id)}
                         aria-label={`Remove ${recipe.name} from selections`}
-                        className="opacity-0 group-hover:opacity-100 transition-opacity"
+                        className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
                       >
                         <X size={16} />
                       </Button>

@@ -71,21 +71,17 @@ export function Plan() {
   }
 
   return (
-    // Break out of the Layout's max-w-5xl + padded <main> so the two-panel
-    // browser can use the full viewport width and height. The calc() margins
-    // pull the element back out to the viewport edges (cancelling max-w-5xl
-    // and px-6), and -my-10 cancels <main>'s vertical padding. The fixed
-    // height lets the inner ScrollAreas know exactly how tall they can be.
+    // Break out of the Layout's max-width so desktop can use a two-panel
+    // browser, while mobile stacks the recipe list above the detail view.
     <div
-      className="-my-10 flex flex-col bg-white"
+      className="-my-6 sm:-my-10 flex flex-col bg-white min-h-[calc(100vh-73px)] lg:h-[calc(100vh-73px)]"
       style={{
         marginLeft: "calc(50% - 50vw)",
         marginRight: "calc(50% - 50vw)",
-        height: "calc(100vh - 73px)",
       }}
     >
       {/* Header */}
-      <div className="border-b border-slate-200 bg-white px-6 py-4 flex items-center justify-between flex-shrink-0">
+      <div className="border-b border-slate-200 bg-white px-4 sm:px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 flex-shrink-0">
         <div className="flex items-center gap-4">
           <Link
             to="/"
@@ -100,7 +96,7 @@ export function Plan() {
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3">
           <Button
             onClick={chooseWeekMeals}
             disabled={recipes.length === 0}
@@ -126,10 +122,10 @@ export function Plan() {
       {/* Two-panel layout. `min-h-0` is critical: without it, flex items
           default to min-height: auto, which lets the inner ScrollAreas grow
           to fit all 50 recipes instead of scrolling. */}
-      <div className="flex-1 flex overflow-hidden min-h-0">
+      <div className="flex-1 flex flex-col lg:flex-row overflow-visible lg:overflow-hidden min-h-0">
         {/* Left Panel - Recipe List */}
-        <div className="w-80 border-r border-slate-200 bg-slate-50 flex flex-col overflow-hidden min-h-0">
-          <ScrollArea className="flex-1 min-h-0">
+        <div className="w-full lg:w-80 border-b lg:border-b-0 lg:border-r border-slate-200 bg-slate-50 flex flex-col overflow-hidden min-h-0">
+          <ScrollArea className="h-72 lg:h-auto lg:flex-1 lg:min-h-0">
             <div className="p-2">
               {recipes.map((recipe) => {
                 const isSelected = selectedRecipe?.id === recipe.id;
@@ -194,12 +190,12 @@ export function Plan() {
         </div>
 
         {/* Right Panel - Recipe Details */}
-        <div className="flex-1 bg-white overflow-hidden min-w-0">
+        <div className="flex-1 bg-white overflow-visible lg:overflow-hidden min-w-0">
           {selectedRecipe ? (
-            <ScrollArea className="h-full">
-              <div className="max-w-4xl mx-auto p-8">
+            <ScrollArea className="lg:h-full">
+              <div className="max-w-4xl mx-auto p-4 sm:p-8">
                 {/* Recipe Image */}
-                <div className="relative rounded-2xl overflow-hidden mb-6 h-80">
+                <div className="relative rounded-2xl overflow-hidden mb-6 h-56 sm:h-80">
                   <img
                     src={selectedRecipe.image}
                     alt={selectedRecipe.name}
@@ -207,7 +203,7 @@ export function Plan() {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end">
                     <div className="p-6 text-white">
-                      <h2 className="text-4xl font-bold mb-2">{selectedRecipe.name}</h2>
+                      <h2 className="text-2xl sm:text-4xl font-bold mb-2">{selectedRecipe.name}</h2>
                       {selectedRecipe.description && (
                         <p className="text-white/90">{selectedRecipe.description}</p>
                       )}
@@ -216,31 +212,31 @@ export function Plan() {
                 </div>
 
                 {/* Recipe Meta */}
-                <div className="grid grid-cols-4 gap-4 mb-6">
-                  <div className="bg-slate-50 rounded-xl p-4 text-center">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-6">
+                  <div className="bg-slate-50 rounded-xl p-3 sm:p-4 text-center">
                     <Clock className="w-5 h-5 mx-auto mb-2 text-[#4E2A84]" />
                     <div className="text-xs text-slate-500 mb-1">Prep Time</div>
                     <div className="font-semibold text-slate-800">{selectedRecipe.prepTime}</div>
                   </div>
-                  <div className="bg-slate-50 rounded-xl p-4 text-center">
+                  <div className="bg-slate-50 rounded-xl p-3 sm:p-4 text-center">
                     <DollarSign className="w-5 h-5 mx-auto mb-2 text-[#4E2A84]" />
                     <div className="text-xs text-slate-500 mb-1">Cost</div>
                     <div className="font-semibold text-slate-800">{selectedRecipe.cost}</div>
                   </div>
-                  <div className="bg-slate-50 rounded-xl p-4 text-center">
+                  <div className="bg-slate-50 rounded-xl p-3 sm:p-4 text-center">
                     <ChefHat className="w-5 h-5 mx-auto mb-2 text-[#4E2A84]" />
                     <div className="text-xs text-slate-500 mb-1">Difficulty</div>
                     <div className="font-semibold text-slate-800">{selectedRecipe.difficulty}</div>
                   </div>
                   {selectedRecipe.servings && (
-                    <div className="bg-slate-50 rounded-xl p-4 text-center">
+                    <div className="bg-slate-50 rounded-xl p-3 sm:p-4 text-center">
                       <Users className="w-5 h-5 mx-auto mb-2 text-[#4E2A84]" />
                       <div className="text-xs text-slate-500 mb-1">Servings</div>
                       <div className="font-semibold text-slate-800">{selectedRecipe.servings}</div>
                     </div>
                   )}
                   {selectedRecipe.calories && !selectedRecipe.servings && (
-                    <div className="bg-slate-50 rounded-xl p-4 text-center">
+                    <div className="bg-slate-50 rounded-xl p-3 sm:p-4 text-center">
                       <Flame className="w-5 h-5 mx-auto mb-2 text-[#4E2A84]" />
                       <div className="text-xs text-slate-500 mb-1">Calories</div>
                       <div className="font-semibold text-slate-800">{selectedRecipe.calories}</div>
@@ -318,7 +314,7 @@ export function Plan() {
                 </div>
 
                 {/* Action Button */}
-                <div className="sticky bottom-0 bg-white pt-6 pb-2 border-t border-slate-200 -mx-8 px-8">
+                <div className="lg:sticky bottom-0 bg-white pt-6 pb-2 border-t border-slate-200 -mx-4 sm:-mx-8 px-4 sm:px-8">
                   <Button
                     onClick={() => toggleMealSelection(selectedRecipe.id)}
                     aria-label={

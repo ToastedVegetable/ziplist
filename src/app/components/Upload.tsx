@@ -201,9 +201,9 @@ export function Upload() {
         </p>
       </div>
 
-      <div className="bg-white rounded-3xl p-8 shadow-sm border border-slate-100">
+      <div className="bg-white rounded-3xl p-5 sm:p-8 shadow-sm border border-slate-100">
         {isSuccess && (
-          <div className="mb-6 bg-green-50 text-green-700 p-4 rounded-xl flex items-center justify-between gap-3 font-medium border border-green-200">
+          <div className="mb-6 bg-green-50 text-green-700 p-4 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 font-medium border border-green-200">
             <div className="flex items-center gap-3">
               <CheckCircle2 size={20} /> Recipe uploaded! It's now in Browse Recipes.
             </div>
@@ -218,7 +218,7 @@ export function Upload() {
         )}
 
         {error && (
-          <div className="mb-6 bg-red-50 text-red-700 p-4 rounded-xl flex items-center justify-between gap-3 font-medium border border-red-200">
+          <div className="mb-6 bg-red-50 text-red-700 p-4 rounded-xl flex items-start justify-between gap-3 font-medium border border-red-200">
             <span>{error}</span>
             <button
               onClick={() => setError(null)}
@@ -351,7 +351,7 @@ export function Upload() {
 
           {/* Ingredients */}
           <div>
-            <div className="flex items-center justify-between mb-2">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-2">
               <label className="block text-sm font-bold text-slate-700">Ingredients</label>
               <span className="text-sm text-slate-500">
                 Estimated cost: <span className="font-bold text-[#4E2A84]">${totalCost.toFixed(2)}</span>
@@ -437,7 +437,7 @@ export function Upload() {
           </div>
         </div>
 
-        <div className="mt-8 flex gap-4">
+        <div className="mt-8 flex flex-col sm:flex-row gap-4">
           <button
             type="button"
             onClick={reset}
