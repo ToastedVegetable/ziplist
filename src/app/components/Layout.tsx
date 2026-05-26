@@ -3,7 +3,7 @@ import { Utensils } from "lucide-react";
 
 export function Layout() {
   return (
-    <div className="min-h-screen bg-[#F5F5F7] text-slate-800 font-sans selection:bg-[#4E2A84] selection:text-white">
+    <div className="min-h-screen bg-[#F7F3F0] text-slate-800 font-sans selection:bg-[#4E2A84] selection:text-white">
       <header className="bg-white sticky top-0 z-10 border-b border-slate-200 shadow-sm">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <Link
@@ -11,7 +11,10 @@ export function Layout() {
             aria-label="Go to ziplist home"
             className="flex items-center gap-2 text-[#4E2A84] hover:opacity-80 transition-opacity"
           >
-            <Utensils size={28} className="text-[#4E2A84]" />
+            <span className="relative">
+              <Utensils size={28} className="text-[#4E2A84]" />
+              <span className="absolute -right-1 -top-1 h-2.5 w-2.5 rounded-full bg-[#E4572E]" />
+            </span>
             <h1 className="text-2xl font-bold tracking-tight">ziplist</h1>
           </Link>
           <nav className="flex flex-wrap items-center justify-center sm:justify-end gap-x-4 gap-y-2 text-sm font-medium text-slate-600">
