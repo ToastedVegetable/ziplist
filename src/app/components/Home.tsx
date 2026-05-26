@@ -11,12 +11,9 @@ const CARD_IMAGES = {
 export function Home() {
   return (
     <div className="flex flex-col items-center justify-center py-8 sm:py-12 text-center animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#E4572E]/20 bg-[#FFF4ED] px-4 py-2 text-sm font-bold text-[#B83B1D]">
-        Northwestern meal planning, less grocery drift
-      </div>
       <h1 className="text-4xl sm:text-5xl font-extrabold text-[#4E2A84] tracking-tight mb-4">ziplist</h1>
       <p className="text-lg sm:text-xl text-slate-600 mb-10 sm:mb-16 max-w-2xl">
-        Turn a fridge check into dinner options, a no-repeat spin, and a grocery list that only asks for what you still need.
+        Decide what to eat without overthinking it
       </p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-4xl">
