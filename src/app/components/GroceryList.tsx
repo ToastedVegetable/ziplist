@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
 import { Link } from "react-router";
-import { ArrowLeft, Printer, Share, CheckCircle2, Circle } from "lucide-react";
+import { ArrowLeft, Printer, Share, CheckCircle2, Circle, ListFilter, Search, Sparkles } from "lucide-react";
 import { useAppContext } from "../context/AppContext";
 
 type GroceryItem = {
@@ -24,7 +24,7 @@ const categoryNames: Record<string, string> = {
 };
 
 export function GroceryList() {
-  const { allRecipes, selectedMeals } = useAppContext();
+  const { allRecipes, selectedMeals, setSelectedMeals, setWeeklyMeals } = useAppContext();
   const [checkedItems, setCheckedItems] = useState<Set<string>>(new Set());
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [highlightActions, setHighlightActions] = useState(false);
@@ -167,18 +167,56 @@ export function GroceryList() {
     }
   };
 
+  const handlePickWeek = () => {
+    const weeklyRecipes = [...allRecipes]
+      .sort(() => Math.random() - 0.5)
+      .slice(0, Math.min(14, allRecipes.length));
+
+    setWeeklyMeals(weeklyRecipes);
+    setSelectedMeals(new Set(weeklyRecipes.map((recipe) => recipe.id)));
+  };
+
   if (mealsToShop.length === 0) {
     return (
-      <div className="text-center py-20 animate-in fade-in">
-        <h2 className="text-2xl font-bold text-slate-700 mb-4">Your grocery list is empty.</h2>
-        <p className="text-slate-500 mb-8">Go back and select some meals to plan your list.</p>
-        <Link
-          to="/plan"
-          aria-label="Plan meals to build a grocery list"
-          className="bg-[#4E2A84] text-white px-6 py-3 rounded-full font-bold hover:bg-[#3d2168]"
-        >
-          Plan Meals
-        </Link>
+      <div className="mx-auto max-w-3xl py-16 text-center animate-in fade-in">
+        <div className="rounded-3xl border border-slate-100 bg-white p-6 sm:p-10 shadow-sm">
+          <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-purple-50">
+            <Sparkles className="text-[#4E2A84]" size={30} />
+          </div>
+          <h2 className="text-2xl font-bold text-slate-800 mb-3">Your grocery list is empty.</h2>
+          <p className="mx-auto max-w-xl text-slate-500 mb-8">
+            Start from a full week, browse one recipe at a time, or search by what is already in your kitchen.
+          </p>
+
+          <div className="grid gap-3 sm:grid-cols-3">
+            <button
+              type="button"
+              onClick={handlePickWeek}
+              disabled={allRecipes.length === 0}
+              className="flex flex-col items-center justify-center rounded-2xl bg-[#4E2A84] px-4 py-5 font-bold text-white transition-colors hover:bg-[#3d2168] disabled:opacity-50"
+              aria-label="Pick 14 meals for this week"
+            >
+              <Sparkles size={22} className="mb-2" />
+              Pick My Week
+            </button>
+            <Link
+              to="/plan"
+              aria-label="Browse recipes to build a grocery list"
+              className="flex flex-col items-center justify-center rounded-2xl border border-[#4E2A84]/20 bg-purple-50 px-4 py-5 font-bold text-[#4E2A84] transition-colors hover:bg-purple-100"
+            >
+              <Search size={22} className="mb-2" />
+              Browse Recipes
+            </Link>
+            <Link
+              to="/ingredient-search"
+              aria-label="Search ingredients to build a grocery list"
+              className="flex flex-col items-center justify-center rounded-2xl border border-[#E4572E]/20 bg-[#FFF4ED] px-4 py-5 font-bold text-[#B83B1D] transition-colors hover:bg-[#FFE5D6]"
+            >
+              <ListFilter size={22} className="mb-2" />
+              Search Ingredients
+            </Link>
+          </div>
+        </div>
       </div>
     );
   }
