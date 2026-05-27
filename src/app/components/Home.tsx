@@ -96,9 +96,9 @@ export function Home() {
           <div className="w-16 h-16 rounded-full bg-[#FFF4ED] flex items-center justify-center mb-5">
             <Plus size={32} className="text-[#E4572E]" />
           </div>
-          <h2 className="text-2xl font-bold mb-3 text-slate-800">Add a Keeper</h2>
+          <h2 className="text-2xl font-bold mb-3 text-slate-800">Add a Recipe</h2>
           <p className="text-slate-500 mb-8 flex-1">
-            Save the meals you actually make so they can show up in Browse, Fridge Match, and the wheel.
+            Save the meals you discover and share them for everyone to see.
           </p>
           <Link
             to="/upload"
