@@ -29,7 +29,7 @@ export function Home() {
           </div>
           <h2 className="text-2xl font-bold mb-3 text-slate-800">Browse Recipes</h2>
           <p className="text-slate-500 mb-8 flex-1">
-            Scan real meal options with prep time, cost, ingredients, and the details you need before committing.
+            Scan real meal options with prep time, cost, ingredients, and the details you need.
           </p>
           <Link
             to="/plan"
@@ -75,7 +75,7 @@ export function Home() {
           </div>
           <h2 className="text-2xl font-bold mb-3 text-slate-800">Decision Wheel</h2>
           <p className="text-slate-500 mb-8 flex-1">
-            Spin through meals without repeats when the group chat, fridge, or your brain refuses to choose.
+            Tired? Have the spinner choose a meal for you!.
           </p>
           <Link
             to="/wheel"
