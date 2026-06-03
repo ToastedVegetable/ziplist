@@ -1,11 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router";
-import { ArrowLeft, Clock, DollarSign, ChefHat, Users, Flame, ShoppingCart, Sparkles } from "lucide-react";
+import { ArrowLeft, Clock, DollarSign, ChefHat, Users, Flame, ShoppingCart, Sparkles, Search, X } from "lucide-react";
 import { useAppContext, Recipe } from "../context/AppContext";
 import { ScrollArea } from "./ui/scroll-area";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { Separator } from "./ui/separator";
+
+type SortOption = "name" | "cost-low" | "time-low" | "difficulty" | "recent";
 
 export function Plan() {
   const { recipeDB, selectedMeals, setSelectedMeals, setWeeklyMeals } = useAppContext();
@@ -14,6 +16,10 @@ export function Plan() {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState<Recipe["category"] | "all">("all");
+  const [difficultyFilter, setDifficultyFilter] = useState<Recipe["difficulty"] | "all">("all");
+  const [sortOption, setSortOption] = useState<SortOption>("name");
   const requestedRecipeId = searchParams.get("recipe");
 
   useEffect(() => {
@@ -47,6 +53,18 @@ export function Plan() {
     setSelectedMeals(next);
   };
 
+  const clearSelectedMeals = () => {
+    setSelectedMeals(new Set());
+    setWeeklyMeals([]);
+  };
+
+  const resetFilters = () => {
+    setSearchTerm("");
+    setCategoryFilter("all");
+    setDifficultyFilter("all");
+    setSortOption("name");
+  };
+
   const chooseWeekMeals = () => {
     const weeklyRecipes = [...recipes]
       .sort(() => Math.random() - 0.5)
@@ -61,6 +79,63 @@ export function Plan() {
     setSelectedRecipe(weeklyRecipes[0]);
     navigate("/grocery-list");
   };
+
+  const visibleRecipes = useMemo(() => {
+    const normalizedSearch = searchTerm.trim().toLowerCase();
+
+    const filtered = recipes.filter((recipe) => {
+      const matchesSearch = !normalizedSearch ||
+        recipe.name.toLowerCase().includes(normalizedSearch) ||
+        recipe.description?.toLowerCase().includes(normalizedSearch) ||
+        recipe.tags.some((tag) => tag.toLowerCase().includes(normalizedSearch)) ||
+        recipe.ingredients.some((ingredient) => ingredient.name.toLowerCase().includes(normalizedSearch));
+      const matchesCategory = categoryFilter === "all" || recipe.category === categoryFilter;
+      const matchesDifficulty = difficultyFilter === "all" || recipe.difficulty === difficultyFilter;
+
+      return matchesSearch && matchesCategory && matchesDifficulty;
+    });
+
+    return filtered.sort((a, b) => {
+      const selectedRank = Number(selectedMeals.has(b.id)) - Number(selectedMeals.has(a.id));
+      if (selectedRank !== 0) {
+        return selectedRank;
+      }
+
+      if (sortOption === "cost-low") {
+        return parseFloat(a.cost.replace("$", "")) - parseFloat(b.cost.replace("$", ""));
+      }
+
+      if (sortOption === "time-low") {
+        return parseInt(a.prepTime) - parseInt(b.prepTime);
+      }
+
+      if (sortOption === "difficulty") {
+        const difficultyRank: Record<Recipe["difficulty"], number> = { Easy: 1, Medium: 2, Hard: 3 };
+        return difficultyRank[a.difficulty] - difficultyRank[b.difficulty];
+      }
+
+      if (sortOption === "recent") {
+        return b.createdAt.getTime() - a.createdAt.getTime();
+      }
+
+      return a.name.localeCompare(b.name);
+    });
+  }, [categoryFilter, difficultyFilter, recipes, searchTerm, selectedMeals, sortOption]);
+
+  useEffect(() => {
+    if (visibleRecipes.length === 0) {
+      setSelectedRecipe(null);
+      return;
+    }
+
+    setSelectedRecipe((currentRecipe) => {
+      if (currentRecipe && visibleRecipes.some((recipe) => recipe.id === currentRecipe.id)) {
+        return currentRecipe;
+      }
+
+      return visibleRecipes[0];
+    });
+  }, [visibleRecipes]);
 
   if (loading) {
     return (
@@ -92,11 +167,24 @@ export function Plan() {
           </Link>
           <div>
             <h1 className="text-xl font-bold text-slate-800">Browse Recipes</h1>
-            <p className="text-sm text-slate-500">{recipes.length} recipes available</p>
+            <p className="text-sm text-slate-500">
+              {visibleRecipes.length} of {recipes.length} recipes shown
+            </p>
           </div>
         </div>
 
         <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+          {selectedMeals.size > 0 && (
+            <Button
+              onClick={clearSelectedMeals}
+              variant="outline"
+              aria-label="Clear selected recipes"
+              className="border-slate-200 text-slate-600 hover:bg-slate-50 gap-2"
+            >
+              <X size={18} />
+              Clear Selection
+            </Button>
+          )}
           <Button
             onClick={chooseWeekMeals}
             disabled={recipes.length === 0}
@@ -125,9 +213,81 @@ export function Plan() {
       <div className="flex-1 flex flex-col lg:flex-row overflow-visible lg:overflow-hidden min-h-0">
         {/* Left Panel - Recipe List */}
         <div className="w-full lg:w-80 border-b lg:border-b-0 lg:border-r border-slate-200 bg-slate-50 flex flex-col overflow-hidden min-h-0">
+          <div className="border-b border-slate-200 bg-white p-3">
+            <div className="relative mb-3">
+              <Search
+                size={16}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+              />
+              <input
+                type="search"
+                value={searchTerm}
+                onChange={(event) => setSearchTerm(event.target.value)}
+                placeholder="Search recipes, tags, ingredients"
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 py-2 pl-9 pr-3 text-sm font-medium text-slate-700 outline-none focus:border-[#4E2A84] focus:ring-2 focus:ring-[#4E2A84]/20"
+              />
+            </div>
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 lg:grid-cols-1">
+              <label className="sr-only" htmlFor="category-filter">Filter by category</label>
+              <select
+                id="category-filter"
+                value={categoryFilter}
+                onChange={(event) => setCategoryFilter(event.target.value as Recipe["category"] | "all")}
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-medium text-slate-700 outline-none focus:border-[#4E2A84] focus:ring-2 focus:ring-[#4E2A84]/20"
+              >
+                <option value="all">All meals</option>
+                <option value="breakfast">Breakfast</option>
+                <option value="lunch">Lunch</option>
+                <option value="dinner">Dinner</option>
+                <option value="snack">Snack</option>
+                <option value="dessert">Dessert</option>
+              </select>
+
+              <label className="sr-only" htmlFor="difficulty-filter">Filter by difficulty</label>
+              <select
+                id="difficulty-filter"
+                value={difficultyFilter}
+                onChange={(event) => setDifficultyFilter(event.target.value as Recipe["difficulty"] | "all")}
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-medium text-slate-700 outline-none focus:border-[#4E2A84] focus:ring-2 focus:ring-[#4E2A84]/20"
+              >
+                <option value="all">All difficulty</option>
+                <option value="Easy">Easy</option>
+                <option value="Medium">Medium</option>
+                <option value="Hard">Hard</option>
+              </select>
+
+              <label className="sr-only" htmlFor="sort-recipes">Sort recipes</label>
+              <select
+                id="sort-recipes"
+                value={sortOption}
+                onChange={(event) => setSortOption(event.target.value as SortOption)}
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-medium text-slate-700 outline-none focus:border-[#4E2A84] focus:ring-2 focus:ring-[#4E2A84]/20"
+              >
+                <option value="name">Sort by name</option>
+                <option value="cost-low">Lowest cost</option>
+                <option value="time-low">Fastest prep</option>
+                <option value="difficulty">Easiest first</option>
+                <option value="recent">Newest first</option>
+              </select>
+            </div>
+            {(searchTerm || categoryFilter !== "all" || difficultyFilter !== "all" || sortOption !== "name") && (
+              <button
+                type="button"
+                onClick={resetFilters}
+                className="mt-3 text-xs font-semibold text-[#4E2A84] hover:text-[#3d2168]"
+              >
+                Clear filters
+              </button>
+            )}
+          </div>
           <ScrollArea className="h-72 lg:h-auto lg:flex-1 lg:min-h-0">
             <div className="p-2">
-              {recipes.map((recipe) => {
+              {visibleRecipes.length === 0 && (
+                <div className="rounded-xl border border-dashed border-slate-200 bg-white p-5 text-center text-sm text-slate-500">
+                  No recipes match these filters.
+                </div>
+              )}
+              {visibleRecipes.map((recipe) => {
                 const isSelected = selectedRecipe?.id === recipe.id;
                 const isInCart = selectedMeals.has(recipe.id);
 
