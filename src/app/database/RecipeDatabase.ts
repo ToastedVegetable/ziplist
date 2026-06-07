@@ -133,13 +133,6 @@ function recipeToRow(input: CreateRecipeInput | Recipe): Omit<RecipeRow, "id" | 
   };
 }
 
-/**
- * RecipeDatabase - Interface between app and recipe storage
- *
- * Uses seed recipes plus browser localStorage for user-uploaded recipes.
- * Can be easily migrated to a real database (Supabase, PostgreSQL, etc.)
- * by implementing the same interface methods with API calls.
- */
 export class RecipeDatabase {
   private recipes: Recipe[];
   private nextId: number;
@@ -257,9 +250,6 @@ export class RecipeDatabase {
     return rowToRecipe(rows[0]);
   }
 
-  /**
-   * CREATE - Add a new recipe
-   */
   async create(input: CreateRecipeInput): Promise<Recipe> {
     if (isSupabaseEnabled()) {
       const remoteRecipe = await this.createRemoteRecipe(input);
@@ -285,17 +275,11 @@ export class RecipeDatabase {
     return recipe;
   }
 
-  /**
-   * READ - Get a single recipe by ID
-   */
   async getById(id: string): Promise<Recipe | null> {
     const recipes = await this.getAll();
     return recipes.find(r => r.id === id) || null;
   }
 
-  /**
-   * READ - Get all recipes
-   */
   async getAll(): Promise<Recipe[]> {
     if (isSupabaseEnabled()) {
       try {
@@ -309,9 +293,6 @@ export class RecipeDatabase {
     return [...this.recipes];
   }
 
-  /**
-   * READ - Get recipes with filtering
-   */
   async find(filter: RecipeFilter): Promise<Recipe[]> {
     let results = await this.getAll();
 
@@ -359,9 +340,6 @@ export class RecipeDatabase {
     return results;
   }
 
-  /**
-   * UPDATE - Update an existing recipe
-   */
   async update(input: UpdateRecipeInput): Promise<Recipe | null> {
     const index = this.recipes.findIndex(r => r.id === input.id);
 
@@ -380,9 +358,6 @@ export class RecipeDatabase {
     return updated;
   }
 
-  /**
-   * DELETE - Remove a recipe
-   */
   async delete(id: string): Promise<boolean> {
     const index = this.recipes.findIndex(r => r.id === id);
 
@@ -395,18 +370,12 @@ export class RecipeDatabase {
     return true;
   }
 
-  /**
-   * UTILITY - Get random recipes
-   */
   async getRandom(count: number): Promise<Recipe[]> {
     const recipes = await this.getAll();
     const shuffled = [...recipes].sort(() => 0.5 - Math.random());
     return shuffled.slice(0, Math.min(count, shuffled.length));
   }
 
-  /**
-   * UTILITY - Record that a recipe was cooked
-   */
   async markAsCooked(id: string): Promise<Recipe | null> {
     const recipe = this.recipes.find(r => r.id === id);
 
@@ -422,9 +391,6 @@ export class RecipeDatabase {
     return recipe;
   }
 
-  /**
-   * UTILITY - Get most popular recipes
-   */
   async getMostPopular(count: number): Promise<Recipe[]> {
     const recipes = await this.getAll();
     const sorted = [...recipes].sort((a, b) =>
@@ -433,9 +399,6 @@ export class RecipeDatabase {
     return sorted.slice(0, count);
   }
 
-  /**
-   * UTILITY - Get recently added recipes
-   */
   async getRecent(count: number): Promise<Recipe[]> {
     const recipes = await this.getAll();
     const sorted = [...recipes].sort((a, b) =>
@@ -444,26 +407,17 @@ export class RecipeDatabase {
     return sorted.slice(0, count);
   }
 
-  /**
-   * UTILITY - Get total count
-   */
   async count(): Promise<number> {
     const recipes = await this.getAll();
     return recipes.length;
   }
 
-  /**
-   * UTILITY - Clear all recipes (use with caution)
-   */
   async clear(): Promise<void> {
     this.recipes = [];
     this.nextId = 1;
     this.persistUserRecipes();
   }
 
-  /**
-   * UTILITY - Bulk import recipes
-   */
   async bulkImport(recipes: CreateRecipeInput[]): Promise<Recipe[]> {
     const created: Recipe[] = [];
 
@@ -475,18 +429,10 @@ export class RecipeDatabase {
     return created;
   }
 
-  /**
-   * MIGRATION HELPER - Export all data as JSON
-   * Useful for backing up or migrating to a real database
-   */
   async export(): Promise<string> {
     return JSON.stringify(this.recipes, null, 2);
   }
 
-  /**
-   * MIGRATION HELPER - Import data from JSON
-   * Useful for restoring from backup or seeding initial data
-   */
   async import(jsonData: string): Promise<void> {
     this.recipes = parseStoredRecipes(jsonData);
 

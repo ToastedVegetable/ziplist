@@ -40,22 +40,16 @@ export function WheelPage() {
   const [searchParams] = useSearchParams();
   const startedFromWeekPicker = searchParams.get("source") === "week";
   const hasWeeklyMealOptions = weeklyMeals.length > 0;
-
-  // Wheel configuration
   const [allRecipes, setAllRecipes] = useState<Recipe[]>([]);
   const [wheelRecipes, setWheelRecipes] = useState<Recipe[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [maxCost, setMaxCost] = useState<number>(10);
   const [showConfig, setShowConfig] = useState(false);
-
-  // Wheel state
   const [isSpinning, setIsSpinning] = useState(false);
   const [rotation, setRotation] = useState(0);
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  // Selection list
   const [pickedRecipes, setPickedRecipes] = useState<Recipe[]>([]);
   const [usingWeeklyMeals, setUsingWeeklyMeals] = useState(startedFromWeekPicker || hasWeeklyMealOptions);
 
@@ -151,29 +145,19 @@ export function WheelPage() {
     }
 
     const sliceAngle = (2 * Math.PI) / wheelRecipes.length;
-
-    // Draw wheel slices
     wheelRecipes.forEach((recipe, index) => {
       const startAngle = index * sliceAngle + (rotation * Math.PI / 180);
       const endAngle = startAngle + sliceAngle;
-
-      // Slice background
       ctx.beginPath();
       ctx.moveTo(centerX, centerY);
       ctx.arc(centerX, centerY, radius, startAngle, endAngle);
       ctx.closePath();
-
-      // Alternate colors
       const colors = ['#4E2A84', '#6B46A8', '#8B5FC9', '#9F7DCE'];
       ctx.fillStyle = colors[index % colors.length];
       ctx.fill();
-
-      // Border
       ctx.strokeStyle = '#fff';
       ctx.lineWidth = 3;
       ctx.stroke();
-
-      // Recipe name
       ctx.save();
       ctx.translate(centerX, centerY);
       ctx.rotate(startAngle + sliceAngle / 2);
@@ -189,8 +173,6 @@ export function WheelPage() {
       });
       ctx.restore();
     });
-
-    // Center circle
     ctx.beginPath();
     ctx.arc(centerX, centerY, 30, 0, 2 * Math.PI);
     ctx.fillStyle = '#fff';
@@ -198,8 +180,6 @@ export function WheelPage() {
     ctx.strokeStyle = '#4E2A84';
     ctx.lineWidth = 4;
     ctx.stroke();
-
-    // Pointer (fixed below the wheel, pointing up at the selected slice)
     const pointerTipY = centerY + radius + 6;
     const pointerBaseY = pointerTipY + 30;
 
@@ -229,8 +209,6 @@ export function WheelPage() {
       if (!startTime) startTime = currentTime;
       const elapsed = currentTime - startTime;
       const progress = Math.min(elapsed / spinDuration, 1);
-
-      // Easing function for smooth deceleration
       const easeOut = 1 - Math.pow(1 - progress, 3);
       const currentRotation = easeOut * totalRotation;
       setRotation(currentRotation);
@@ -238,10 +216,8 @@ export function WheelPage() {
       if (progress < 1) {
         requestAnimationFrame(animate);
       } else {
-        // Calculate which recipe was selected
         const normalizedRotation = currentRotation % 360;
         const sliceAngle = 360 / wheelRecipes.length;
-        // The pointer is fixed at the bottom (90 degrees in canvas coordinates).
         const pointerAngle = (90 - normalizedRotation + 360) % 360;
         const selectedIndex = Math.floor(pointerAngle / sliceAngle) % wheelRecipes.length;
         const selected = wheelRecipes[selectedIndex];
@@ -250,8 +226,6 @@ export function WheelPage() {
         setIsSpinning(false);
         setWheelRecipes(prev => prev.filter(recipe => recipe.id !== selected.id));
         setRotation(0);
-
-        // Add to picked recipes if not already there
         if (!pickedRecipes.find(r => r.id === selected.id)) {
           setPickedRecipes(prev => [...prev, selected]);
         }
@@ -316,7 +290,6 @@ export function WheelPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-white">
-      {/* Header */}
       <div className="border-b border-slate-200 bg-white/80 backdrop-blur px-4 sm:px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-4">
           <Link
@@ -344,9 +317,7 @@ export function WheelPage() {
       </div>
 
       <div className="container mx-auto p-4 sm:p-6 grid lg:grid-cols-[minmax(0,1fr),400px] gap-6">
-        {/* Left: Wheel Section */}
         <div className="space-y-6">
-          {/* Configuration Panel */}
           {showConfig && (
             <Card className="p-4 sm:p-6 bg-white border-2 border-[#4E2A84]/20">
               <div className="flex items-center justify-between mb-4">
@@ -362,7 +333,6 @@ export function WheelPage() {
               </div>
 
               <div className="space-y-4">
-                {/* Categories */}
                 <div>
                   <label className="block text-sm font-semibold text-slate-700 mb-2">
                     Meal Categories
@@ -385,7 +355,6 @@ export function WheelPage() {
                   </div>
                 </div>
 
-                {/* Tags */}
                 <div>
                   <label className="block text-sm font-semibold text-slate-700 mb-2">
                     Dietary Preferences
@@ -408,7 +377,6 @@ export function WheelPage() {
                   </div>
                 </div>
 
-                {/* Max Cost */}
                 <div>
                   <label className="block text-sm font-semibold text-slate-700 mb-2">
                     Max Cost: ${maxCost}
@@ -450,7 +418,6 @@ export function WheelPage() {
             </Card>
           )}
 
-          {/* Wheel Display */}
           <Card className="p-4 sm:p-8 bg-white">
             <div className="flex flex-col items-center">
               {usingWeeklyMeals && weeklyMeals.length > 0 && (
@@ -519,7 +486,6 @@ export function WheelPage() {
                 )}
               </div>
 
-              {/* Current wheel recipes preview */}
               <div className="mt-6 w-full">
                 <p className="text-xs text-slate-500 text-center mb-2">
                   Current wheel: {wheelRecipes.length} recipes
@@ -536,7 +502,6 @@ export function WheelPage() {
           </Card>
         </div>
 
-        {/* Right: Selection List */}
         <div className="bg-white rounded-xl border border-slate-200 shadow-sm flex flex-col max-h-[75vh] lg:h-[calc(100vh-120px)] lg:max-h-none lg:sticky lg:top-6">
           <div className="p-4 border-b border-slate-200">
             <div className="flex items-center justify-between mb-2">

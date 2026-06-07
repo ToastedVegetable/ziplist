@@ -17,7 +17,6 @@ export function Home() {
       </p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-4xl">
-        {/* Card 1 */}
         <div className="bg-white rounded-3xl p-4 sm:p-5 shadow-sm border border-slate-100 flex flex-col items-center text-center hover:shadow-md transition-shadow overflow-hidden">
           <img
             src={CARD_IMAGES.browse}
@@ -40,7 +39,6 @@ export function Home() {
           </Link>
         </div>
 
-        {/* Card 2 */}
         <div className="bg-white rounded-3xl p-4 sm:p-5 shadow-sm border border-slate-100 flex flex-col items-center text-center hover:shadow-md transition-shadow overflow-hidden">
           <img
             src={CARD_IMAGES.ingredients}
@@ -63,7 +61,6 @@ export function Home() {
           </Link>
         </div>
 
-        {/* Card 3 */}
         <div className="bg-white rounded-3xl p-4 sm:p-5 shadow-sm border border-slate-100 flex flex-col items-center text-center hover:shadow-md transition-shadow overflow-hidden">
           <img
             src={CARD_IMAGES.wheel}
@@ -86,7 +83,6 @@ export function Home() {
           </Link>
         </div>
 
-        {/* Card 4 */}
         <div className="bg-white rounded-3xl p-4 sm:p-5 shadow-sm border border-slate-100 flex flex-col items-center text-center hover:shadow-md transition-shadow overflow-hidden">
           <img
             src={CARD_IMAGES.upload}

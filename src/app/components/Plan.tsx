@@ -146,8 +146,6 @@ export function Plan() {
   }
 
   return (
-    // Break out of the Layout's max-width so desktop can use a two-panel
-    // browser, while mobile stacks the recipe list above the detail view.
     <div
       className="-my-6 sm:-my-10 flex flex-col bg-white min-h-[calc(100vh-73px)] lg:h-[calc(100vh-73px)]"
       style={{
@@ -155,7 +153,6 @@ export function Plan() {
         marginRight: "calc(50% - 50vw)",
       }}
     >
-      {/* Header */}
       <div className="border-b border-slate-200 bg-white px-4 sm:px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 flex-shrink-0">
         <div className="flex items-center gap-4">
           <Link
@@ -207,11 +204,7 @@ export function Plan() {
         </div>
       </div>
 
-      {/* Two-panel layout. `min-h-0` is critical: without it, flex items
-          default to min-height: auto, which lets the inner ScrollAreas grow
-          to fit all 50 recipes instead of scrolling. */}
       <div className="flex-1 flex flex-col lg:flex-row overflow-visible lg:overflow-hidden min-h-0">
-        {/* Left Panel - Recipe List */}
         <div className="w-full lg:w-80 border-b lg:border-b-0 lg:border-r border-slate-200 bg-slate-50 flex flex-col overflow-hidden min-h-0">
           <div className="border-b border-slate-200 bg-white p-3">
             <div className="relative mb-3">
@@ -349,12 +342,10 @@ export function Plan() {
           </ScrollArea>
         </div>
 
-        {/* Right Panel - Recipe Details */}
         <div className="flex-1 bg-white overflow-visible lg:overflow-hidden min-w-0">
           {selectedRecipe ? (
             <ScrollArea className="lg:h-full">
               <div className="max-w-4xl mx-auto p-4 sm:p-8">
-                {/* Recipe Image */}
                 <div className="relative rounded-2xl overflow-hidden mb-6 h-56 sm:h-80">
                   <img
                     src={selectedRecipe.image}
@@ -371,7 +362,6 @@ export function Plan() {
                   </div>
                 </div>
 
-                {/* Recipe Meta */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-6">
                   <div className="bg-slate-50 rounded-xl p-3 sm:p-4 text-center">
                     <Clock className="w-5 h-5 mx-auto mb-2 text-[#4E2A84]" />
@@ -404,7 +394,6 @@ export function Plan() {
                   )}
                 </div>
 
-                {/* Tags */}
                 <div className="flex flex-wrap gap-2 mb-6">
                   {selectedRecipe.source === "user-upload" && (
                     <Badge className="bg-[#4E2A84] text-white hover:bg-[#4E2A84]">
@@ -420,9 +409,7 @@ export function Plan() {
 
                 <Separator className="my-6" />
 
-                {/* Ingredients and Steps */}
                 <div className="grid md:grid-cols-2 gap-8 mb-8">
-                  {/* Ingredients */}
                   <div>
                     <h3 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
                       <div className="w-1 h-6 bg-[#4E2A84] rounded-full"></div>
@@ -454,7 +441,6 @@ export function Plan() {
                     </div>
                   </div>
 
-                  {/* Steps */}
                   <div>
                     <h3 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
                       <div className="w-1 h-6 bg-[#4E2A84] rounded-full"></div>
@@ -473,7 +459,6 @@ export function Plan() {
                   </div>
                 </div>
 
-                {/* Action Button */}
                 <div className="lg:sticky bottom-0 bg-white pt-6 pb-2 border-t border-slate-200 -mx-4 sm:-mx-8 px-4 sm:px-8">
                   <Button
                     onClick={() => toggleMealSelection(selectedRecipe.id)}

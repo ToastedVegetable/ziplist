@@ -8,7 +8,7 @@ type IngredientDraft = {
   name: string;
   category: Ingredient["category"];
   quantity: string;
-  cost: string; // kept as string in the form, converted on submit
+  cost: string;
 };
 
 const INGREDIENT_CATEGORIES: Ingredient["category"][] = [
@@ -231,7 +231,6 @@ export function Upload() {
         )}
 
         <div className="space-y-6">
-          {/* Image picker */}
           <div>
             <input
               ref={fileInputRef}
@@ -241,7 +240,6 @@ export function Upload() {
               onChange={(e) => {
                 const file = e.target.files?.[0];
                 if (file) onPickImage(file);
-                // Reset value so picking the same file twice re-fires onChange
                 e.target.value = "";
               }}
             />
@@ -271,7 +269,6 @@ export function Upload() {
             )}
           </div>
 
-          {/* Name */}
           <div>
             <label className="block text-sm font-bold text-slate-700 mb-2">Recipe Name</label>
             <input
@@ -283,7 +280,6 @@ export function Upload() {
             />
           </div>
 
-          {/* Description */}
           <div>
             <label className="block text-sm font-bold text-slate-700 mb-2">Short Description (optional)</label>
             <input
@@ -295,7 +291,6 @@ export function Upload() {
             />
           </div>
 
-          {/* Category, Difficulty, Prep Time */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
               <label className="block text-sm font-bold text-slate-700 mb-2">Meal</label>
@@ -337,7 +332,6 @@ export function Upload() {
             </div>
           </div>
 
-          {/* Tags */}
           <div>
             <label className="block text-sm font-bold text-slate-700 mb-2">Tags (comma separated)</label>
             <input
@@ -349,7 +343,6 @@ export function Upload() {
             />
           </div>
 
-          {/* Ingredients */}
           <div>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-2">
               <label className="block text-sm font-bold text-slate-700">Ingredients</label>
@@ -424,7 +417,6 @@ export function Upload() {
             </button>
           </div>
 
-          {/* Steps */}
           <div>
             <label className="block text-sm font-bold text-slate-700 mb-2">Steps (one per line)</label>
             <textarea

@@ -1,17 +1,5 @@
 import { Recipe, Ingredient } from "../types/Recipe";
 
-/**
- * Seed data - Initial 50 recipes with full, realistic content.
- *
- * Each recipe carries hand-written ingredients (with realistic per-ingredient
- * costs) and real cooking instructions. The displayed `cost` field is derived
- * from the ingredient costs so what you see equals what the grocery list will
- * sum to.
- */
-
-// ---------------------------------------------------------------------------
-// Image library
-// ---------------------------------------------------------------------------
 const IMG = {
   eggSandwich: "https://images.unsplash.com/photo-1687102624999-2615998b3ee5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxlZ2clMjBzYW5kd2ljaHxlbnwxfHx8fDE3Nzg1ODY1ODR8MA&ixlib=rb-4.1.0&q=80&w=1080",
   chickenRice: "https://images.unsplash.com/photo-1636401870585-a8852371e84a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjaGlja2VuJTIwcmljZSUyMGJvd2x8ZW58MXx8fHwxNzc4NzAwMTI4fDA&ixlib=rb-4.1.0&q=80&w=1080",
@@ -65,9 +53,6 @@ const IMG = {
   chickenAlfredo: "https://images.unsplash.com/photo-1645112411341-6c4fd023714a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxDaGlja2VuJTIwQWxmcmVkb3xlbnwxfHx8fDE3Nzg4MjA1Mjd8MA&ixlib=rb-4.1.0&q=80&w=1080",
 };
 
-// ---------------------------------------------------------------------------
-// Helper to total ingredient cost into the "$X.XX" string the UI expects
-// ---------------------------------------------------------------------------
 function totalCost(ingredients: Ingredient[]): string {
   const sum = ingredients.reduce((acc, ing) => acc + (ing.optional ? 0 : ing.cost), 0);
   return "$" + sum.toFixed(2);
@@ -1559,13 +1544,7 @@ const SEEDS: RecipeSeed[] = [
   },
 ];
 
-// ---------------------------------------------------------------------------
-// Build the exported recipe list, computing cost from ingredients so the
-// "Cost" badge always matches the sum on the grocery list.
-// ---------------------------------------------------------------------------
 function hydrate(seed: RecipeSeed, index: number): Recipe {
-  // Spread the creation timestamps across a couple of weeks so the "recent"
-  // and "popular" helpers stay sensible.
   const day = 10 + Math.floor(index / 3);
   const hour = 8 + (index % 8);
   const created = new Date(`2025-01-${String(day).padStart(2, "0")}T${String(hour).padStart(2, "0")}:00:00`);
@@ -1581,6 +1560,4 @@ function hydrate(seed: RecipeSeed, index: number): Recipe {
 }
 
 export const ALL_SEED_RECIPES: Recipe[] = SEEDS.map(hydrate);
-
-// Kept for backward compatibility — same content as ALL_SEED_RECIPES now.
 export const SEED_RECIPES: Recipe[] = ALL_SEED_RECIPES;
